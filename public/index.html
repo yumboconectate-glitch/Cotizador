@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador Mi Empresa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--azul:#007DB7;--navy:#14395c;--cielo:#3AA5D1;--bg:#eef4f9;--card:#fff;--tinta:#1f2d3a;--gris:#64748b;--linea:#e3ebf2;--ok:#0f9d58;--danger:#e5484d;--suave:#f5f9fc;--wa:#25d366}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tinta);font-family:'Inter',system-ui,sans-serif;font-size:14px}
+h1,h2,h3,.brand{font-family:'Poppins',sans-serif}
+/* login */
+#gate{position:fixed;inset:0;background:linear-gradient(160deg,#0a4a72,#007DB7 60%,#3AA5D1);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+#gate.hidden{display:none!important}
+#gate .box{background:#fff;border-radius:18px;padding:30px 26px;width:100%;max-width:360px;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center}
+#gate img{height:70px;margin-bottom:6px}
+#gate h1{font-size:18px;color:var(--navy);margin:6px 0 2px}
+#gate p{color:var(--gris);font-size:12.5px;margin:0 0 18px}
+#gate input{margin-bottom:10px}
+#gateMsg{color:var(--danger);font-size:12.5px;min-height:16px;margin-top:4px}
+.mini{font-size:11px;color:var(--gris);margin-top:14px;line-height:1.4}
+header.top{background:#fff;border-bottom:1px solid var(--linea);position:sticky;top:0;z-index:20}
+.top-in{max-width:1120px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top img{height:46px}
+.brand-txt{font-weight:700;color:var(--navy);font-size:18px;line-height:1}
+.brand-txt small{display:block;font-family:'Inter';font-weight:500;color:var(--azul);font-size:11px;letter-spacing:.5px}
+nav.tabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+nav.tabs button{border:0;background:transparent;color:var(--gris);font-weight:600;padding:9px 13px;border-radius:9px;cursor:pointer;font-size:13.5px}
+nav.tabs button.active{background:var(--azul);color:#fff}
+nav.tabs button:hover:not(.active){background:var(--suave);color:var(--navy)}
+main{max-width:1120px;margin:0 auto;padding:20px 18px 60px}
+.card{background:var(--card);border:1px solid var(--linea);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h2{margin:0 0 14px;font-size:16px;color:var(--navy);display:flex;align-items:center;gap:8px}
+.card h2 .n{background:var(--azul);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+label{display:block;font-weight:600;color:var(--navy);margin:0 0 5px;font-size:12.5px}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--linea);border-radius:9px;font-family:inherit;font-size:14px;color:var(--tinta);background:#fff}
+textarea{resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0,125,183,.12)}
+.row{display:grid;gap:12px}
+.g4{grid-template-columns:2fr 2fr 1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g2{grid-template-columns:1fr 1fr}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px}
+.btn-primary{background:var(--azul);color:#fff}.btn-primary:hover{background:#0069a0}
+.btn-ghost{background:var(--suave);color:var(--navy);border:1px solid var(--linea)}.btn-ghost:hover{background:#e9f1f8}
+.btn-danger{background:#fdecec;color:var(--danger)}
+.btn-wa{background:var(--wa);color:#fff}.btn-mail{background:var(--navy);color:#fff}.btn-doc{background:#6b3fa0;color:#fff}
+.btn-sm{padding:6px 10px;font-size:12.5px}
+.btn-pdf{background:var(--ok);color:#fff;font-size:15px;padding:13px 22px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 8px;font-size:13px;border-bottom:1px solid var(--linea)}
+th{color:var(--gris);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+.tright{text-align:right}
+.muted{color:var(--gris);font-size:12.5px}
+.totbox{background:var(--suave);border:1px solid var(--linea);border-radius:12px;padding:14px 16px}
+.totline{display:flex;justify-content:space-between;padding:5px 0;font-size:14px}
+.totline.big{font-size:19px;font-weight:700;color:var(--navy);border-top:2px solid var(--azul);margin-top:6px;padding-top:10px}
+.totline .lbl{color:var(--gris)}
+.check{display:flex;align-items:center;gap:9px;background:var(--suave);border:1px solid var(--linea);border-radius:10px;padding:10px 12px;cursor:pointer}
+.check input{width:auto}
+.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.right{margin-left:auto}
+.empty{text-align:center;color:var(--gris);padding:26px;font-size:13px}
+.gain{font-size:12px;color:var(--ok);font-weight:600}
+.hidden{display:none}
+.hint{background:#fff8e6;border:1px solid #f5e3a3;color:#8a6d1f;border-radius:10px;padding:10px 12px;font-size:12.5px;margin-bottom:14px}
+.share{background:linear-gradient(135deg,#f0f9ff,#eaf4fb);border:1px solid #cfe6f5;border-radius:14px;padding:18px;margin-top:16px}
+.share h3{margin:0 0 4px;color:var(--navy);font-size:15px}
+@media(max-width:720px){.g4,.g3,.g2{grid-template-columns:1fr}nav.tabs{width:100%;margin-left:0}}
+.overlay{position:fixed;inset:0;background:rgba(10,40,60,.55);z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
+.overlay.hidden{display:none!important}
+.modal{background:#fff;border-radius:16px;max-width:760px;width:100%;max-height:92vh;overflow-y:auto;padding:22px;box-shadow:0 18px 60px rgba(0,0,0,.3)}
+.pgbar{background:#e3ebf2;border-radius:99px;height:12px;overflow:hidden;margin:8px 0 4px}
+.pgfill{background:linear-gradient(90deg,#0f9d58,#34c479);height:100%;border-radius:99px;transition:width .3s}
+.pgstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.pgstat{background:var(--suave);border-radius:10px;padding:10px 12px;text-align:center}
+.pgstat .l{font-size:10.5px;color:var(--gris);text-transform:uppercase;letter-spacing:.5px}
+.pgstat .v{font-weight:700;color:var(--navy);font-size:15px;margin-top:2px}
+.pgstat.saldo .v{color:#b7791f}
+.pgstat.pagada .v{color:#0f9d58}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="gate">
+  <div class="box">
+    <img id="gateLogo" alt="Mi Empresa">
+    <h1 id="gateTitle">Acceso al Cotizador</h1>
+    <p id="gateSub">Ingresa tus credenciales</p>
+    <input id="gUser" placeholder="Usuario" autocomplete="off" name="cotz_user_field" autocapitalize="off" autocorrect="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly')">
+    <input id="gPass" type="password" placeholder="Contraseña" autocomplete="new-password" name="cotz_pass_field" readonly onfocus="this.removeAttribute('readonly')">
+    <input id="gPass2" type="password" placeholder="Repite la contraseña" autocomplete="new-password" name="cotz_pass2_field" class="hidden">
+    <button class="btn btn-primary" id="gBtn" style="width:100%;justify-content:center;margin-top:6px">Entrar</button>
+    <div id="gateMsg"></div>
+    <div class="mini" id="gateNote"></div>
+    <div class="mini" style="margin-top:10px"><a href="#" id="gReset" style="color:#007DB7;text-decoration:underline">Reiniciar acceso</a></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" class="hidden">
+<header class="top">
+  <div class="top-in">
+    <img id="logoTop" alt="Mi Empresa">
+    <div class="brand-txt">Cotizador<small>CONECTANDO SUEÑOS</small></div>
+    <nav class="tabs" id="tabs">
+      <button data-t="cotizar" class="active">Cotizar</button>
+      <button data-t="clientes">Clientes</button>
+      <button data-t="productos">Productos</button>
+      <button data-t="servicios">Servicios</button>
+      <button data-t="orden">Orden de servicio</button>
+      <button data-t="historial">Historial</button>
+      <button data-t="ajustes" id="tabAjustes">Ajustes</button>
+    </nav>
+    <span class="muted" id="whoami" style="font-weight:600"></span>
+    <button class="btn btn-ghost btn-sm" id="logoutTop">Salir</button>
+  </div>
+</header>
+<main>
+
+<!-- COTIZAR -->
+<section id="tab-cotizar">
+  <div class="card">
+    <h2><span class="n">1</span> Cliente</h2>
+    <div class="flex" style="margin-bottom:12px">
+      <select id="selCliente" style="max-width:460px"><option value="">— Selecciona un cliente registrado —</option></select>
+      <button class="btn btn-ghost btn-sm" id="toggleNewCli">+ Cliente nuevo</button>
+    </div>
+    <div id="newCliBox" class="row g4 hidden" style="align-items:end">
+      <div><label>Nombre / Razón social</label><input id="cliNombre" placeholder="Ej: Parroquia Nuestro Señor..."></div>
+      <div><label>Cédula / NIT</label><input id="cliCedula"></div>
+      <div><label>Correo</label><input id="cliCorreo" type="email" placeholder="correo@dominio.com"></div>
+      <div><label>Teléfono</label><input id="cliTel"></div>
+    </div>
+    <div id="cliResumen" class="muted"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">2</span> Encabezado de la propuesta</h2>
+    <div class="row g2">
+      <div><label>Asunto / Referencia</label><input id="asunto" placeholder="Ej: conexión de cámaras de vigilancia"></div>
+      <div><label>Ciudad y fecha</label><input id="ciudadFecha" placeholder="Mi Ciudad, DD de mes del AAAA"></div>
+    </div>
+    <div style="margin-top:12px">
+      <label>Cuerpo de la propuesta (editable)</label>
+      <textarea id="cuerpo" rows="7"></textarea>
+      <p class="muted" style="margin:5px 0 0">Puedes editarlo para cada cotización. El texto por defecto se cambia en Ajustes.</p>
+    </div>
+  </div>
+
+  <div class="card" id="combosCard"><h2>⚡ Cotización rápida (combos)</h2>
+    <p class="muted" style="margin:0 0 10px">Un clic agrega el paquete completo a los ítems de la cotización.</p>
+    <div class="flex" id="combosBar" style="flex-wrap:wrap"></div>
+    <div class="flex" style="margin-top:8px">
+      <button class="btn btn-ghost btn-sm" id="combosAdmin">⚙ Administrar combos</button>
+      <span class="muted" id="combosMsg"></span>
+    </div>
+  </div>
+  <div class="card">
+    <h2><span class="n">3</span> Ítems</h2>
+    <div class="flex" style="margin-bottom:12px">
+      <select id="selItem" style="max-width:420px"><option value="">— Selecciona de tu catálogo —</option></select>
+      <button class="btn btn-primary btn-sm" id="addFromCat">+ Agregar</button>
+      <button class="btn btn-ghost btn-sm" id="addManual">+ Línea manual</button>
+    </div>
+    <div style="overflow-x:auto"><table class="itemtable">
+      <thead><tr><th style="width:20%">Ítem</th><th style="width:32%">Descripción</th><th style="width:9%">Cant.</th><th style="width:16%">Vlr unitario</th><th style="width:16%">Vlr total</th><th style="width:5%"></th></tr></thead>
+      <tbody id="itemsBody"></tbody>
+    </table></div>
+    <div id="noItems" class="empty">Aún no has agregado ítems.</div>
+    <p id="gainLine" class="gain" style="margin:12px 2px 0"></p>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">4</span> Totales</h2>
+    <div class="row g3" style="align-items:end">
+      <div><label>Descuento (%) — opcional</label><input id="descuento" type="number" min="0" max="100" step="0.5" placeholder="0"></div>
+      <div><label class="check" style="margin-top:20px"><input type="checkbox" id="incIva"> Incluir IVA (<span id="ivaPct">19</span>%)</label></div>
+      <div><label>Observaciones (opcional)</label><input id="obs"></div>
+    </div>
+    <div class="row g2" style="margin-top:16px"><div></div>
+      <div class="totbox">
+        <div class="totline"><span class="lbl">Subtotal</span><span id="tSub">$ 0</span></div>
+        <div class="totline hidden" id="tDescLine"><span class="lbl">Descuento (<span id="tDescPct">0</span>%)</span><span id="tDesc">- $ 0</span></div>
+        <div class="totline hidden" id="tBaseLine"><span class="lbl">Base gravable</span><span id="tBase">$ 0</span></div>
+        <div class="totline hidden" id="tIvaLine"><span class="lbl">IVA (<span id="tIvaPct">19</span>%)</span><span id="tIva">$ 0</span></div>
+        <div class="totline big"><span>TOTAL</span><span id="tTotal">$ 0</span></div>
+      </div>
+    </div>
+    <div class="flex" style="margin-top:18px">
+      <button class="btn btn-pdf" id="genPdf">📄 Generar cotización PDF</button>
+      <span id="editBadge" class="hidden" style="background:#fff3cd;border:1px solid #ffe08a;color:#7a5c00;border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:600">✎ Editando <span id="editNum"></span> <a href="#" id="cancelEdit" style="color:#b00020;margin-left:8px">cancelar</a></span>
+      <button class="btn btn-ghost" id="clearCot">Limpiar</button>
+      <span class="right muted" id="nextNum"></span>
+    </div>
+
+    <div id="shareBox" class="share hidden">
+      <h3>Cotización <span id="shNum"></span> lista ✓</h3>
+      <p class="muted" style="margin:0 0 6px">Enlace de descarga para el cliente:</p>
+      <p style="margin:0 0 12px;word-break:break-all"><a id="shLinkA" href="#" target="_blank" style="color:var(--azul);font-weight:600"><span id="shLink"></span></a></p>
+      <div class="flex">
+        <button class="btn btn-ghost btn-sm" id="shPdf">⬇ Descargar PDF</button>
+        <button class="btn btn-ghost btn-sm" id="shCopy">🔗 Copiar enlace</button>
+        <button class="btn btn-wa btn-sm" id="shWa">Enviar por WhatsApp</button>
+        <button class="btn btn-mail btn-sm" id="shMail">Enviar por correo</button>
+      </div>
+      <p class="muted" id="shMailMsg" style="margin:8px 0 0"></p>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTES -->
+<section id="tab-clientes" class="hidden">
+  <div class="card"><h2><span class="n">C</span> Nuevo cliente</h2>
+    <div class="row g4" style="align-items:end">
+      <div><label>Nombre / Razón social</label><input id="cNombre"></div>
+      <div><label>Cédula / NIT</label><input id="cCedula"></div>
+      <div><label>Correo</label><input id="cCorreo" type="email"></div>
+      <div><label>Teléfono</label><input id="cTel"></div>
+    </div>
+    <div class="flex" style="margin-top:12px;align-items:end">
+      <div style="min-width:280px"><label>RUT del cliente (opcional, PDF)</label><input type="file" id="cRut" accept="application/pdf"></div>
+      <button class="btn btn-primary" id="addCli">Guardar cliente</button>
+      <span class="muted" id="cliMsg"></span>
+    </div>
+  </div>
+  <div class="card"><h2>Base de clientes</h2>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Nombre</th><th>Cédula/NIT</th><th>Correo</th><th>Teléfono</th><th>RUT</th><th></th></tr></thead>
+      <tbody id="cliBody"></tbody></table></div>
+    <div id="noCli" class="empty">Sin clientes aún.</div>
+    <input type="file" id="cRutRow" accept="application/pdf" class="hidden">
+  </div>
+</section>
+
+<!-- PRODUCTOS -->
+<section id="tab-productos" class="hidden">
+  <div class="card"><h2><span class="n">P</span> Nuevo producto</h2>
+    <div class="row" style="grid-template-columns:2fr 2fr 1fr 1fr 1.2fr;align-items:end">
+      <div><label>Nombre</label><input id="pNombre"></div>
+      <div><label>Descripción</label><input id="pDesc"></div>
+      <div><label>Costo</label><input id="pCosto" type="number" min="0" placeholder="0"></div>
+      <div><label>% Utilidad</label><input id="pUtil" type="number" min="0" placeholder="0"></div>
+      <div><label>Precio venta</label><input id="pPrecio" type="number" min="0" placeholder="0"></div>
+    </div>
+    <p class="muted" style="margin:8px 0 0">Escribe costo + % utilidad y el precio se calcula solo. O escribe el precio directo.</p>
+    <div class="flex" style="margin-top:12px"><button class="btn btn-primary" id="addProd">Guardar producto</button></div>
+  </div>
+  <div class="card" id="impCard"><h2>📥 Importar lista de precios del proveedor (Excel)</h2>
+    <p class="muted" style="margin:0 0 12px">Sube el Excel semanal del proveedor. El sistema detecta las columnas, aplica tu % de utilidad sobre el precio de compra, <b>actualiza los precios de productos existentes</b> (por nombre) y crea los nuevos.</p>
+    <div class="flex" style="align-items:end">
+      <div style="min-width:280px"><label>Archivo Excel (.xlsx, .xls, .csv)</label><input type="file" id="impFile" accept=".xlsx,.xls,.csv"></div>
+      <div style="width:130px"><label>% Utilidad</label><input id="impUtil" type="number" value="10" min="0" step="0.5"></div>
+    </div>
+    <div id="impMap" class="hidden" style="margin-top:14px">
+      <div class="row g4" style="align-items:end">
+        <div><label>Hoja del Excel</label><select id="impHoja"></select></div>
+        <div><label>Columna: Código (opcional)</label><select id="impColCod"></select></div>
+        <div><label>Columna: Nombre / descripción</label><select id="impColNom"></select></div>
+        <div><label>Columna: Precio de compra</label><select id="impColPre"></select></div>
+      </div>
+      <div class="row g4" style="align-items:end;margin-top:10px">
+        <div><label>Columna: Descripción extra (opcional)</label><select id="impColDesc"></select></div>
+        <div><label>Saltar filas iniciales</label><input id="impSkip" type="number" value="1" min="0"></div>
+        <div></div><div></div>
+      </div>
+      <p class="muted" style="margin:8px 0 0">💡 "Todas las hojas" une el catálogo completo. El nombre final queda como <b>CÓDIGO + descripción</b>. Las filas de categorías y encabezados repetidos se ignoran solas. Verifica si el precio de compra es el "Precio" (sin IVA) o el "Precio IVA" según cómo cotices.</p>
+      <div style="overflow-x:auto;margin-top:12px"><table>
+        <thead><tr><th>Producto</th><th class="tright">Compra</th><th class="tright">Venta (+<span id="impUtilTxt">10</span>%)</th></tr></thead>
+        <tbody id="impPrev"></tbody></table></div>
+      <p class="muted" id="impStats" style="margin:8px 0"></p>
+      <div class="flex">
+        <button class="btn btn-primary" id="impGo">⬆ Importar al catálogo</button>
+        <span class="muted" id="impMsg"></span>
+      </div>
+    </div>
+  </div>
+  <div class="card"><h2>Lista de productos</h2>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Nombre</th><th>Descripción</th><th class="tright">Costo</th><th class="tright">%</th><th class="tright">Precio</th><th></th></tr></thead>
+      <tbody id="prodBody"></tbody></table></div>
+    <div id="noProd" class="empty">Sin productos aún.</div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="tab-servicios" class="hidden">
+  <div class="card"><h2><span class="n">S</span> Nuevo servicio</h2>
+    <div class="row" style="grid-template-columns:2fr 2fr 1fr 1fr 1.2fr;align-items:end">
+      <div><label>Nombre</label><input id="sNombre"></div>
+      <div><label>Descripción</label><input id="sDesc"></div>
+      <div><label>Costo</label><input id="sCosto" type="number" min="0" placeholder="0"></div>
+      <div><label>% Utilidad</label><input id="sUtil" type="number" min="0" placeholder="0"></div>
+      <div><label>Precio venta</label><input id="sPrecio" type="number" min="0" placeholder="0"></div>
+    </div>
+    <div class="flex" style="margin-top:12px"><button class="btn btn-primary" id="addServ">Guardar servicio</button></div>
+  </div>
+  <div class="card"><h2>Lista de servicios</h2>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Nombre</th><th>Descripción</th><th class="tright">Costo</th><th class="tright">%</th><th class="tright">Precio</th><th></th></tr></thead>
+      <tbody id="servBody"></tbody></table></div>
+    <div id="noServ" class="empty">Sin servicios aún.</div>
+  </div>
+</section>
+
+<!-- ORDEN DE SERVICIO -->
+<section id="tab-orden" class="hidden">
+  <div class="hint">Genera la orden de servicio con el mismo membrete y envíala a firma electrónica con un enlace propio (el cliente firma desde su celular, con validez de la Ley 527 de 1999). Puedes partir de una cotización (botón "→ Orden" en Historial) o crearla aquí desde cero.</div>
+  <div class="card"><h2><span class="n">O</span> Datos de la orden</h2>
+    <div class="flex" style="margin-bottom:12px">
+      <select id="oCliente" style="max-width:460px"><option value="">— Selecciona un cliente —</option></select>
+      <button class="btn btn-ghost btn-sm" id="oToNewCli">+ Cliente nuevo</button>
+    </div>
+    <div class="row g3">
+      <div><label>Fecha de elaboración</label><input id="oFecha"></div>
+      <div><label>Tipo de documento</label><select id="oTipoDoc"><option>NIT</option><option>CC</option><option>RUT</option></select></div>
+      <div><label>Número de documento</label><input id="oNumDoc"></div>
+    </div>
+    <div class="row g3" style="margin-top:12px">
+      <div><label>Tipo de orden</label><select id="oTipo">
+        <option value="venta">🛠 Venta e instalación de equipos</option>
+        <option value="internet">🌐 Servicio de internet</option>
+      </select></div>
+      <div id="oDirGenBox"><label>Dirección de instalación</label><input id="oDirGen" placeholder="Ej: Carrera 4 # 5-41, bodega 2"></div>
+      <div id="oCiudadGenBox"><label>Ciudad</label><input id="oCiudadGen"></div>
+    </div>
+  </div>
+  <div class="card" id="cardVenta"><h2>Ítems del proyecto</h2>
+    <div class="flex" style="margin-bottom:10px"><button class="btn btn-primary btn-sm" id="ovAddRow">+ Agregar ítem</button><span class="muted">Busca en tu catálogo escribiendo en la casilla Ítem.</span></div>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Ítem</th><th>Descripción</th><th style="width:70px">Cant.</th><th style="width:120px">Vlr unitario</th><th class="tright">Vlr total</th><th></th></tr></thead>
+      <tbody id="ovBody"></tbody></table></div>
+    <div id="ovNoRows" class="empty">Agrega al menos un ítem.</div>
+  </div>
+  <div class="card" id="cardInternet"><h2>Relación de servicios</h2>
+    <div class="flex" style="margin-bottom:10px"><button class="btn btn-primary btn-sm" id="oAddRow">+ Agregar servicio</button></div>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Servicio</th><th>Ancho banda</th><th>Ciudad</th><th>Dirección instalación</th><th>Cargo instalación</th><th>Recurrente mensual</th><th></th></tr></thead>
+      <tbody id="oBody"></tbody></table></div>
+    <div id="oNoRows" class="empty">Agrega al menos un servicio.</div>
+  </div>
+  <div class="card"><h2>Valores de la orden</h2>
+    <div class="row g4" style="align-items:end">
+      <div><label>Subtotal</label><input id="oSub" type="number" min="0" placeholder="0"></div>
+      <div><label>Descuento (%)</label><input id="oDescPct" type="number" min="0" max="100" step="0.5" placeholder="0"></div>
+      <div><label class="check" style="margin-top:20px"><input type="checkbox" id="oIvaChk"> Incluir IVA (<span id="oIvaPct2">19</span>%)</label></div>
+      <div><button class="btn btn-ghost btn-sm" id="oCalcRows">Σ Sumar desde la tabla</button></div>
+    </div>
+    <div class="row g2" style="margin-top:14px"><div></div>
+      <div class="totbox">
+        <div class="totline"><span class="lbl">Subtotal</span><span id="oTSub">$ 0</span></div>
+        <div class="totline hidden" id="oTDescLine"><span class="lbl">Descuento (<span id="oTDescPct">0</span>%)</span><span id="oTDesc">- $ 0</span></div>
+        <div class="totline hidden" id="oTBaseLine"><span class="lbl">Base gravable</span><span id="oTBase">$ 0</span></div>
+        <div class="totline hidden" id="oTIvaLine"><span class="lbl">IVA (<span id="oTIvaPct3">19</span>%)</span><span id="oTIva">$ 0</span></div>
+        <div class="totline big"><span>TOTAL A PAGAR</span><span id="oTTotal">$ 0</span></div>
+        <div class="totline hidden" id="oTMesLine"><span class="lbl">Recurrente mensual</span><span id="oTMes">$ 0</span></div>
+      </div>
+    </div>
+    <p class="muted" style="margin:10px 0 0">El subtotal se calcula solo sumando la columna "Cargo instalación" de la tabla (puedes ajustarlo a mano). El recurrente mensual se muestra aparte. Al convertir una cotización, estos valores llegan solos. Si el subtotal queda en 0, el PDF no imprime el bloque de totales (útil para órdenes de servicio recurrente donde la tabla ya trae los valores).</p>
+  </div>
+  <div class="card"><h2>Condiciones comerciales</h2>
+    <textarea id="oCond" rows="5"></textarea>
+    <div class="flex" style="margin-top:16px">
+      <button class="btn btn-pdf" id="oPdf">📄 PDF orden</button>
+      <button class="btn btn-doc" id="oCrearFirma">🖊 Crear enlace de firma electrónica</button>
+    </div>
+    <div id="firmaLinkBox" class="share hidden" style="margin-top:14px">
+      <h3>Enlace de firma listo ✓</h3>
+      <p style="margin:0 0 12px;word-break:break-all"><a id="fLinkA" href="#" target="_blank" style="color:var(--azul);font-weight:600"><span id="fLink"></span></a></p>
+      <div class="flex">
+        <button class="btn btn-ghost btn-sm" id="fCopy">🔗 Copiar enlace</button>
+        <button class="btn btn-wa btn-sm" id="fWa">Enviar por WhatsApp</button>
+        <button class="btn btn-mail btn-sm" id="fMail">Enviar por correo</button>
+      </div>
+      <p class="muted" id="fMsg" style="margin:8px 0 0"></p>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORIAL -->
+<section id="tab-historial" class="hidden">
+  <div class="card"><h2>📊 Resumen del mes</h2>
+    <div class="pgstats" style="grid-template-columns:repeat(4,1fr)" id="dashStats"></div>
+    <div class="row g2" style="margin-top:6px">
+      <div><h2 style="font-size:13px;margin:8px 0 6px">Por vendedor (mes actual)</h2><div id="dashVend"></div></div>
+      <div><h2 style="font-size:13px;margin:8px 0 6px">Top productos cotizados (mes)</h2><div id="dashTop"></div></div>
+    </div>
+  </div>
+  <div class="card"><h2>💰 Cartera — saldos pendientes</h2>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>N°</th><th>Cliente</th><th class="tright">Total</th><th class="tright">Abonado</th><th class="tright">Saldo</th><th></th></tr></thead>
+      <tbody id="cartBody"></tbody></table></div>
+    <div id="noCart" class="empty">Sin saldos pendientes — cartera al día 🎉</div>
+    <p style="margin:10px 0 0;font-weight:700;color:var(--navy)" id="cartTotal"></p>
+  </div>
+  <div class="card"><h2>Cotizaciones generadas</h2>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>N°</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th class="tright">Total</th><th></th></tr></thead>
+      <tbody id="histBody"></tbody></table></div>
+    <div id="noHist" class="empty">Todavía no has generado cotizaciones.</div>
+  </div>
+  <div class="card"><h2>Firmas electrónicas</h2>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Documento</th><th>Cliente</th><th>Estado</th><th>Fecha</th><th></th></tr></thead>
+      <tbody id="firmasBody"></tbody></table></div>
+    <div id="noFirmas" class="empty">Aún no has creado enlaces de firma.</div>
+  </div>
+</section>
+
+<!-- AJUSTES -->
+<section id="tab-ajustes" class="hidden">
+  <div class="card"><h2>Datos de la empresa (membrete)</h2>
+    <div class="row g2">
+      <div><label>Razón social</label><input id="aEmpresa"></div>
+      <div><label>Marca</label><input id="aMarca"></div>
+      <div><label>Eslogan</label><input id="aEslogan"></div>
+      <div><label>NIT</label><input id="aNit"></div>
+      <div><label>Representante legal</label><input id="aRep"></div>
+      <div><label>Cargo</label><input id="aCargo"></div>
+      <div><label>Dirección</label><input id="aDir"></div>
+      <div><label>Ciudad</label><input id="aCiudad"></div>
+      <div><label>Página web</label><input id="aWeb"></div>
+      <div><label>Correo</label><input id="aMail"></div>
+      <div><label>Teléfono 1 / WhatsApp</label><input id="aTel1"></div>
+      <div><label>Teléfono 2</label><input id="aTel2"></div>
+      <div><label>Instagram</label><input id="aIg"></div>
+      <div><label>Facebook</label><input id="aFb"></div>
+      <div><label>IVA por defecto (%)</label><input id="aIva" type="number"></div>
+      <div><label>Prefijo N°</label><input id="aPrefijo"></div>
+      <div><label>Próximo consecutivo</label><input id="aConsec" type="number"></div>
+    </div>
+    <div style="margin-top:12px">
+      <label>Reemplazar logo (opcional)</label>
+      <input type="file" id="aLogo" accept="image/png,image/jpeg">
+      <img id="logoPrev" style="height:56px;margin-top:10px;display:block">
+    </div>
+    <div style="margin-top:12px">
+      <label>Reemplazar firma del representante (opcional, PNG con fondo transparente ideal)</label>
+      <input type="file" id="aFirma" accept="image/png,image/jpeg">
+      <img id="firmaPrev" style="height:48px;margin-top:10px;display:block;background:#f5f9fc;border-radius:8px;padding:4px">
+    </div>
+  </div>
+  <div class="card"><h2>Textos por defecto</h2>
+    <label>Cuerpo de la propuesta</label>
+    <textarea id="aCuerpo" rows="7"></textarea>
+    <div class="row g2" style="margin-top:12px">
+      <div><label>Vigencia</label><textarea id="aVigencia" rows="3"></textarea></div>
+      <div><label>Aceptación del servicio</label><textarea id="aAceptacion" rows="3"></textarea></div>
+    </div>
+  </div>
+  <div class="card" id="docsCard"><h2>Documentos de la empresa</h2>
+    <p class="muted" style="margin:0 0 12px">Carga aquí los documentos legales (PDF, máx 10MB c/u). Cuando apruebes una orden firmada, se envían automáticamente al cliente por correo, y también puedes compartir el enlace público por WhatsApp.</p>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Documento</th><th>Estado</th><th>Archivo</th><th></th></tr></thead>
+      <tbody id="docsBody"></tbody></table></div>
+    <div class="flex" style="margin-top:14px">
+      <button class="btn btn-ghost btn-sm" id="docsCopy">🔗 Copiar enlace público</button>
+      <button class="btn btn-wa btn-sm" id="docsWa">Compartir por WhatsApp</button>
+      <a id="docsVer" href="#" target="_blank" class="btn btn-ghost btn-sm">👁 Ver como cliente</a>
+      <span class="muted" id="docsMsg"></span>
+    </div>
+    <input type="file" id="docFile" accept="application/pdf" class="hidden">
+  </div>
+  <div class="card" id="factCard"><h2>🧾 Facturación electrónica (CRM)</h2>
+    <p class="muted" style="margin:0 0 12px">Cuando apruebes una orden <b>con IVA</b>, el cotizador enviará automáticamente los datos de la factura (cliente, ítems, base, IVA, total) a esta URL — apúntala a tu n8n o CRM para generar la factura electrónica en tu sistema (WispHub, Siigo, etc.).</p>
+    <div class="row g3" style="align-items:end">
+      <div style="grid-column:span 2"><label>URL del webhook de facturación</label><input id="factUrl" placeholder="https://n8n.tudominio.com/webhook/facturar"></div>
+      <div><label>Token (opcional, va como Bearer)</label><input id="factToken" type="password" autocomplete="new-password"></div>
+    </div>
+    <div class="flex" style="margin-top:12px;align-items:center">
+      <label class="check" style="margin:0"><input type="checkbox" id="factActivo"> Envío automático al aprobar órdenes con IVA</label>
+      <button class="btn btn-primary btn-sm" id="factSave">Guardar</button>
+      <button class="btn btn-ghost btn-sm" id="factTest">Probar conexión</button>
+      <span class="muted" id="factMsg"></span>
+    </div>
+  </div>
+  <div class="card" id="smtpCard"><h2>Servidor de correo (SMTP)</h2>
+    <p class="muted" style="margin:0 0 12px">Desde aquí configuras el correo con el que el sistema envía cotizaciones y notificaciones. Cualquier empresa puede poner su propio servidor.</p>
+    <div class="row g4" style="align-items:end">
+      <div><label>Servidor (host)</label><input id="smHost" placeholder="mail.tudominio.com" autocomplete="off"></div>
+      <div><label>Puerto</label><input id="smPort" type="number" placeholder="465"></div>
+      <div><label>Usuario / correo</label><input id="smUser" placeholder="notificaciones@tudominio.com" autocomplete="off"></div>
+      <div><label>Contraseña</label><input id="smPass" type="password" placeholder="••••••••" autocomplete="new-password"></div>
+    </div>
+    <div class="row g4" style="align-items:end;margin-top:12px">
+      <div><label>Remitente (From)</label><input id="smFrom" placeholder="notificaciones@tudominio.com"></div>
+      <div><button class="btn btn-primary" id="saveSmtp">Guardar SMTP</button></div>
+      <div><button class="btn btn-ghost" id="testSmtp">📧 Enviar correo de prueba</button></div>
+      <div><span class="muted" id="smtpMsg"></span></div>
+    </div>
+    <p class="muted" style="margin:10px 0 0">Puerto 465 usa SSL directo; 587 usa STARTTLS. La contraseña se guarda en el servidor y nunca se muestra de vuelta.</p>
+  </div>
+  <div class="card" id="usersCard"><h2>Usuarios del sistema</h2>
+    <div class="row g4" style="align-items:end">
+      <div><label>Usuario</label><input id="uUser" placeholder="Ej: MariaLopez" autocomplete="off"></div>
+      <div><label>Contraseña (mín 4)</label><input id="uPass" type="text" placeholder="Clave inicial"></div>
+      <div><label>Rol</label><select id="uRol"><option value="vendedor">Vendedor</option><option value="admin">Administrador</option></select></div>
+      <div><button class="btn btn-primary" id="addUser">Crear usuario</button></div>
+    </div>
+    <p class="muted" style="margin:8px 0 14px">Vendedor: cotiza, clientes, catálogo, órdenes e historial. Administrador: todo, incluidos Ajustes y usuarios.</p>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th></th></tr></thead>
+      <tbody id="usersBody"></tbody></table></div>
+    <p class="muted" id="usersMsg" style="margin-top:8px"></p>
+  </div>
+  <div class="card"><h2>Acceso</h2>
+    <p class="muted">Cada usuario puede cambiar su propia contraseña. Las contraseñas se guardan cifradas en el servidor.</p>
+    <div class="flex"><button class="btn btn-ghost btn-sm" id="changePass">Cambiar mi contraseña</button><button class="btn btn-ghost btn-sm" id="logoutBtn">Cerrar sesión</button></div>
+  </div>
+  <div class="flex" style="margin-bottom:20px"><button class="btn btn-primary" id="saveCfg">Guardar ajustes</button><span class="muted" id="cfgSaved"></span></div>
+</section>
+
+</main>
+</div>
+
+<datalist id="catList"></datalist>
+<div class="overlay hidden" id="combosModal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 style="margin:0">⚙ Combos de cotización rápida</h2>
+      <button class="btn btn-ghost btn-sm" id="cbClose">✕ Cerrar</button>
+    </div>
+    <div class="row g3" style="align-items:end;margin-top:12px">
+      <div><label>Combo</label><select id="cbSel"></select></div>
+      <div><label>Nombre del combo</label><input id="cbNombre" placeholder="Ej: ⚡ Kit 4 cámaras hogar"></div>
+      <div class="flex" style="align-items:end"><button class="btn btn-danger btn-sm" id="cbDel">✕ Eliminar combo</button></div>
+    </div>
+    <div style="overflow-x:auto;margin-top:12px"><table>
+      <thead><tr><th>Ítem</th><th>Descripción</th><th style="width:70px">Cant.</th><th style="width:110px">Precio</th><th></th></tr></thead>
+      <tbody id="cbBody"></tbody></table></div>
+    <div class="flex" style="margin-top:10px">
+      <button class="btn btn-ghost btn-sm" id="cbAddLinea">+ Agregar línea</button>
+      <button class="btn btn-primary" id="cbGuardar">💾 Guardar combo</button>
+      <span class="muted" id="cbMsg"></span>
+    </div>
+    <p class="muted" style="margin:12px 0 0">💡 Precio <b>0</b> = al cotizar se toma el <b>precio vigente del catálogo</b> (por nombre). Así tus combos se actualizan solos con el importador semanal. Precio &gt; 0 = fijo.</p>
+  </div>
+</div>
+<div class="overlay hidden" id="pagosModal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 style="margin:0">💰 Pagos de <span id="pgNum"></span></h2>
+      <button class="btn btn-ghost btn-sm" id="pgClose">✕ Cerrar</button>
+    </div>
+    <p class="muted" id="pgCliente" style="margin:4px 0 0"></p>
+    <div class="pgstats">
+      <div class="pgstat"><div class="l">Valor total</div><div class="v" id="pgTotal">$ 0</div></div>
+      <div class="pgstat"><div class="l">Abonado</div><div class="v" id="pgAbonado">$ 0</div></div>
+      <div class="pgstat saldo" id="pgSaldoBox"><div class="l">Saldo pendiente</div><div class="v" id="pgSaldo">$ 0</div></div>
+    </div>
+    <div class="pgbar"><div class="pgfill" id="pgFill" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 14px">
+      <button class="btn btn-wa btn-sm" id="pgEstadoWa">📲 Enviar estado de cuenta por WhatsApp</button>
+      <span class="muted" id="pgPct"></span>
+    </div>
+    <div class="card" style="box-shadow:none;border:1px solid var(--linea);padding:16px">
+      <h2 style="font-size:14px">Registrar abono</h2>
+      <div class="row g4" style="align-items:end">
+        <div><label>Valor del abono</label><input id="pgValor" type="number" min="1" placeholder="0"></div>
+        <div><label>Método</label><select id="pgMetodo"><option>Transferencia</option><option>Efectivo</option><option>Consignación</option><option>Tarjeta</option><option>Otro</option></select></div>
+        <div><label>Nota (opcional)</label><input id="pgNota" placeholder="Ej: abono 50%"></div>
+      </div>
+      <div class="flex" style="margin-top:12px;align-items:end">
+        <div style="min-width:260px"><label>Comprobante (PDF/imagen, opcional)</label><input type="file" id="pgComp" accept="application/pdf,image/*"></div>
+        <label class="check" style="margin:0 8px"><input type="checkbox" id="pgNotif" checked> Notificar saldo al cliente por correo</label>
+        <button class="btn btn-primary" id="pgAdd">Registrar abono</button>
+      </div>
+      <p class="muted" id="pgMsg" style="margin:8px 0 0"></p>
+    </div>
+    <div style="overflow-x:auto;margin-top:14px"><table>
+      <thead><tr><th>Fecha</th><th>Valor</th><th>Método</th><th>Nota</th><th>Por</th><th></th></tr></thead>
+      <tbody id="pgBody"></tbody></table></div>
+    <div id="pgEmpty" class="empty">Sin abonos registrados aún.</div>
+  </div>
+</div>
+<script>
+const DEFAULT_LOGO="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMjAiIGhlaWdodD0iODAiPjxyZWN0IHdpZHRoPSIyMjAiIGhlaWdodD0iODAiIHJ4PSIxMiIgZmlsbD0iIzAwN0RCNyIvPjx0ZXh0IHg9IjExMCIgeT0iNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlRVIExPR088L3RleHQ+PC9zdmc+";
+const DEFAULT_FIRMA="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPjx0ZXh0IHg9IjEwMCIgeT0iMzgiIGZvbnQtZmFtaWx5PSJjdXJzaXZlIiBmb250LXNpemU9IjIyIiBmaWxsPSIjMTQzOTVjIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXN0eWxlPSJpdGFsaWMiPkZpcm1hPC90ZXh0Pjwvc3ZnPg==";
+const fmt=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0});
+const $=id=>document.getElementById(id); const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+let cfg={},productos=[],servicios=[],clientes=[],historial=[],lineas=[],lastCot=null;
+
+const DEF_CUERPO=`Cordial saludo,
+
+En respuesta a su amable solicitud y teniendo en cuenta los requerimientos de su proyecto, nos complace presentarle nuestra propuesta comercial.
+
+Esta propuesta contiene información de carácter confidencial y así se acepta, para uso exclusivo de CONÉCTATE y su cliente; y ha sido diseñada técnica y comercialmente para su caso particular. Por estas razones, su contenido solo debe divulgarse a personal autorizado del cliente.
+
+Para la distribución de copias de la presente propuesta en cualquier formato es necesaria la autorización previa y escrita de CONÉCTATE.
+
+Cualquier inquietud acerca de los términos de la presente propuesta, favor contactarnos a los celulares 301 769 7066 – 314 873 0064, o vía e-mail correo@miempresa.com.`;
+const DEF_VIGENCIA='Vigencia de la propuesta: 15 días calendario contados a partir de la fecha de presentación de la misma.';
+const DEF_ACEPTACION='Aceptación del servicio: se considera que pasados 3 días después de haber entregado e instalado, y si el cliente no ha reportado novedad sobre el punto, se iniciará el proceso de facturación.';
+const DEFAULT_CFG={empresa:'MI EMPRESA COMUNICACIONES DEL PACÍFICO S.A.S',marca:'Mi Empresa',eslogan:'Tu eslogan aquí',
+  nit:'900.000.000-0',rep:'Nombre del Representante',cargo:'Representante Legal',
+  dir:'Calle 1 #2-34, Mi Ciudad',ciudad:'Mi Ciudad',web:'www.miempresa.com',mail:'correo@miempresa.com',
+  tel1:'3000000001',tel2:'3000000000',ig:'@miempresa',fb:'@miempresa',iva:19,prefijo:'COT',consecutivo:1,
+  logo:DEFAULT_LOGO,firma:DEFAULT_FIRMA,cuerpo:DEF_CUERPO,vigencia:DEF_VIGENCIA,aceptacion:DEF_ACEPTACION};
+
+async function sGet(k){try{const r=await fetch('/api/kv/'+encodeURIComponent(k),{credentials:'same-origin'});if(!r.ok)return null;const j=await r.json();return j.value;}catch(e){return null;}}
+async function sSet(k,v){try{await fetch('/api/kv/'+encodeURIComponent(k),{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:v})});}catch(e){console.error(e);}}
+
+/* ---------- LOGIN (servidor) ---------- */
+let authMode='login';
+async function initGate(){
+  $('gateLogo').src=DEFAULT_LOGO;
+  let me={}; try{ me=await fetch('/api/auth/me',{credentials:'same-origin'}).then(r=>r.json()); }catch(e){}
+  if(me.authenticated){ await afterAuth(); return; }
+  if(me.needSetup){
+    authMode='setup';
+    $('gateTitle').textContent='Crea tu acceso';
+    $('gateSub').textContent='Define usuario y contraseña (primer uso)';
+    $('gPass2').classList.remove('hidden');
+    $('gBtn').textContent='Crear acceso';
+    $('gateNote').textContent='Se guarda en el servidor de forma segura (contraseña cifrada). Compartida por todos los equipos.';
+  } else { authMode='login'; }
+}
+$('gBtn').onclick=async()=>{
+  const u=$('gUser').value.trim(),p=$('gPass').value;
+  if(!u||!p){$('gateMsg').textContent='Completa los campos';return;}
+  $('gateMsg').textContent='...';
+  if(authMode==='setup'){
+    if(p!==$('gPass2').value){$('gateMsg').textContent='Las contraseñas no coinciden';return;}
+    if(p.length<4){$('gateMsg').textContent='Mínimo 4 caracteres';return;}
+    const r=await fetch('/api/auth/setup',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+    if(r.ok) await afterAuth(); else $('gateMsg').textContent='No se pudo crear el acceso';
+  } else {
+    const r=await fetch('/api/auth/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+    if(r.ok) await afterAuth(); else $('gateMsg').textContent='Usuario o contraseña incorrectos';
+  }
+};
+[$('gPass'),$('gPass2'),$('gUser')].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')$('gBtn').click();}));
+function openApp(){ $('gate').style.display='none'; $('gate').classList.add('hidden'); $('app').classList.remove('hidden'); }
+$('gReset').onclick=(e)=>{e.preventDefault();alert('El acceso ahora se administra en el servidor. Si olvidaste la contraseña, se reinicia borrando el archivo de datos del servidor (te lo explico en la guía de despliegue).');};
+
+/* ---------- LOAD ---------- */
+async function loadAll(){
+  cfg={...DEFAULT_CFG,...(await sGet('cfg')||{})}; if(!cfg.logo)cfg.logo=DEFAULT_LOGO; if(!cfg.firma)cfg.firma=DEFAULT_FIRMA;
+  productos=await sGet('productos')||[]; servicios=await sGet('servicios')||[];
+  clientes=await sGet('clientes')||[]; historial=await sGet('historial')||[];
+  await sSet('cfg',cfg);
+}
+
+/* ---------- TABS ---------- */
+$('tabs').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  document.querySelectorAll('main > section').forEach(s=>s.classList.add('hidden'));$('tab-'+b.dataset.t).classList.remove('hidden');
+  const t=b.dataset.t;
+  try{
+    if(t==='productos'||t==='servicios'||t==='cotizar'){productos=await sGet('productos')||[];servicios=await sGet('servicios')||[];renderCat();}
+    if(t==='cotizar'){renderCombosBar();if(pendingEditCot)aplicarEditCot();}
+    if(t==='clientes'||t==='cotizar'||t==='orden'){clientes=await sGet('clientes')||[];renderCli();renderOrdenSelect();
+      if(t==='orden'&&pendingOrdenCli){$('oCliente').value=pendingOrdenCli.id;$('oNumDoc').value=pendingOrdenCli.cedula;
+        if(!$('oCliente').value&&pendingOrdenCli.id){alert('El cliente de esa cotización ya no está en la lista de Clientes. Selecciónalo manualmente o créalo de nuevo.');}
+        pendingOrdenCli=null;}}
+    if(t==='historial'){historial=await sGet('historial')||[];await cargarVistas();renderHist();renderFirmas();}
+  }catch(err){console.error('refresh tab',err);}
+});
+
+/* ---------- PRECIO POR % ---------- */
+function wireCalc(costoId,utilId,precId){
+  const c=$(costoId),u=$(utilId),p=$(precId);
+  const fromCost=()=>{const cv=+c.value||0,uv=+u.value||0;if(cv>0){p.value=Math.round(cv*(1+uv/100));}};
+  const fromPrice=()=>{const cv=+c.value||0,pv=+p.value||0;if(cv>0)u.value=Math.round((pv/cv-1)*100);};
+  c.addEventListener('input',fromCost);u.addEventListener('input',fromCost);p.addEventListener('input',fromPrice);
+}
+wireCalc('pCosto','pUtil','pPrecio'); wireCalc('sCosto','sUtil','sPrecio');
+
+/* ---------- CATALOGO ---------- */
+function renderCat(){
+  const pb=$('prodBody');pb.innerHTML='';
+  productos.forEach(o=>pb.insertAdjacentHTML('beforeend',`<tr><td>${esc(o.nombre)}</td><td class="muted">${esc(o.desc||'')}</td><td class="tright">${o.costo?fmt.format(o.costo):'—'}</td><td class="tright">${o.util?o.util+'%':'—'}</td><td class="tright">${fmt.format(o.precio||0)}</td><td class="tright"><button class="btn btn-ghost btn-sm" data-edit-p="${o.id}">Editar</button> <button class="btn btn-danger btn-sm" data-del-p="${o.id}">Eliminar</button></td></tr>`));
+  $('noProd').style.display=productos.length?'none':'block';
+  const sb=$('servBody');sb.innerHTML='';
+  servicios.forEach(o=>sb.insertAdjacentHTML('beforeend',`<tr><td>${esc(o.nombre)}</td><td class="muted">${esc(o.desc||'')}</td><td class="tright">${o.costo?fmt.format(o.costo):'—'}</td><td class="tright">${o.util?o.util+'%':'—'}</td><td class="tright">${fmt.format(o.precio||0)}</td><td class="tright"><button class="btn btn-ghost btn-sm" data-edit-s="${o.id}">Editar</button> <button class="btn btn-danger btn-sm" data-del-s="${o.id}">Eliminar</button></td></tr>`));
+  $('noServ').style.display=servicios.length?'none':'block';
+  renderSelector();
+}
+let editP=null,editS=null;
+function startEditP(id){const o=productos.find(x=>x.id===id);if(!o)return;editP=id;$('pNombre').value=o.nombre;$('pDesc').value=o.desc||'';$('pCosto').value=o.costo||'';$('pUtil').value=o.util||'';$('pPrecio').value=o.precio||'';$('addProd').textContent='Actualizar producto';window.scrollTo({top:0,behavior:'smooth'});}
+function startEditS(id){const o=servicios.find(x=>x.id===id);if(!o)return;editS=id;$('sNombre').value=o.nombre;$('sDesc').value=o.desc||'';$('sCosto').value=o.costo||'';$('sUtil').value=o.util||'';$('sPrecio').value=o.precio||'';$('addServ').textContent='Actualizar servicio';window.scrollTo({top:0,behavior:'smooth'});}
+$('addProd').onclick=async()=>{const n=$('pNombre').value.trim();if(!n){alert('Nombre requerido');return;}
+  const data={nombre:n,desc:$('pDesc').value.trim(),costo:+$('pCosto').value||0,util:+$('pUtil').value||0,precio:+$('pPrecio').value||0};
+  if(editP){const o=productos.find(x=>x.id===editP);Object.assign(o,data);editP=null;$('addProd').textContent='Guardar producto';}
+  else productos.push({id:uid(),...data});
+  await sSet('productos',productos);['pNombre','pDesc','pCosto','pUtil','pPrecio'].forEach(i=>$(i).value='');renderCat();};
+$('addServ').onclick=async()=>{const n=$('sNombre').value.trim();if(!n){alert('Nombre requerido');return;}
+  const data={nombre:n,desc:$('sDesc').value.trim(),costo:+$('sCosto').value||0,util:+$('sUtil').value||0,precio:+$('sPrecio').value||0};
+  if(editS){const o=servicios.find(x=>x.id===editS);Object.assign(o,data);editS=null;$('addServ').textContent='Guardar servicio';}
+  else servicios.push({id:uid(),...data});
+  await sSet('servicios',servicios);['sNombre','sDesc','sCosto','sUtil','sPrecio'].forEach(i=>$(i).value='');renderCat();};
+
+document.body.addEventListener('click',async e=>{const d=e.target.dataset;
+  if(d.editP){startEditP(d.editP);}
+  if(d.editS){startEditS(d.editS);}
+  if(d.delP){const p=productos.find(x=>x.id===d.delP);if(!confirmDel('el producto "'+(p?p.nombre:'')+'"'))return;productos=productos.filter(x=>x.id!==d.delP);await sSet('productos',productos);renderCat();}
+  if(d.delS){const sv=servicios.find(x=>x.id===d.delS);if(!confirmDel('el servicio "'+(sv?sv.nombre:'')+'"'))return;servicios=servicios.filter(x=>x.id!==d.delS);await sSet('servicios',servicios);renderCat();}
+  if(d.delC){const cl=clientes.find(x=>x.id===d.delC);if(!confirmDel('el cliente "'+(cl?cl.nombre:'')+'"'))return;clientes=clientes.filter(x=>x.id!==d.delC);await sSet('clientes',clientes);renderCli();}
+  if(d.delH){const h=historial.find(x=>x.id===d.delH);if(!confirmDel('la cotización '+(h?h.numero:'')))return;historial=historial.filter(x=>x.id!==d.delH);await sSet('historial',historial);renderHist();}
+  if(d.reH){const h=historial.find(x=>x.id===d.reH);if(h){
+    if(!h.aceptaToken){h.aceptaToken=Array.from(crypto.getRandomValues(new Uint8Array(14))).map(b=>b.toString(16).padStart(2,'0')).join('');await sSet('historial',historial);}lastCot=h;buildPDF(h,false);}}
+  if(d.toOrden){const h=historial.find(x=>x.id===d.toOrden);if(h){if(h.estado!=='aceptada'){h.estado='aceptada';sSet('historial',historial);}cotToOrden(h);}}
+  if(d.editCot){const h=historial.find(x=>x.id===d.editCot);if(h)startEditCot(h);}
+  if(d.pagos){abrirPagos(d.pagos);}
+  if(d.combo){aplicarCombo(d.combo);}
+  if(false){}
+  if(d.ffact){
+    if(!confirm('¿Enviar esta orden a facturación (CRM)?'))return;
+    e.target.disabled=true;e.target.textContent='Enviando...';
+    const r=await fetch('/api/firmas/'+d.ffact+'/facturar',{method:'POST',credentials:'same-origin'});
+    const j=await r.json();
+    alert(j.ok?('✓ Enviada a facturación (HTTP '+j.status+')'):'⚠ '+(j.error||('HTTP '+(j.status||'?'))+'\nRevisa la URL en Ajustes → Facturación.'));
+    renderFirmas();
+  }
+  if(d.pgwa){
+    const num=waNum();
+    if(!num){alert('El cliente no tiene teléfono registrado. Agrégalo en Clientes.');return;}
+    const p=(pagosData?.pagos||[]).find(x=>x.id===d.pgwa);if(!p)return;
+    const msg=`Hola ${pagosInfo.nombre}, confirmamos el registro de tu abono por *${fmt.format(p.valor)}*${p.metodo?' ('+p.metodo+')':''} del ${new Date(p.fecha).toLocaleDateString('es-CO')} a la cotización *${pagosInfo.numero}*.\n\n✅ Total abonado: ${fmt.format(pagosData.abonado)}\n${pagosData.saldo===0?'🎉 *Cuenta al día* ¡Gracias!':'⏳ Saldo pendiente: *'+fmt.format(pagosData.saldo)+'*'}\n\n¡Gracias! - *${cfg.marca||cfg.empresa}* 📶`;
+    window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
+  }
+  if(d.pgdel){if(!confirmDel('este abono'))return;
+    const r=await fetch('/api/pagos/'+encodeURIComponent(pagosCotId)+'/'+d.pgdel,{method:'DELETE',credentials:'same-origin'});
+    if(r.ok){renderPagos(await r.json());historial=await sGet('historial')||[];renderHist();}}
+});
+
+function splitCodigo(nombre){
+  const n=(nombre||'').trim();
+  const m=n.match(/^([A-Za-z0-9][A-Za-z0-9\-\/\.]{2,19})\s+(.{6,})$/);
+  if(m&&(/[0-9]/.test(m[1])&&/[A-Za-z]/.test(m[1])||m[1].includes('-'))){
+    return {item:m[1],desc:m[2]};
+  }
+  return {item:n,desc:''};
+}
+function catAll(){return [...productos.map(p=>({...p,_t:'P'})),...servicios.map(p=>({...p,_t:'S'}))];}
+function buscarEnCatalogo(txt){
+  const q=(txt||'').trim().toLowerCase();if(!q)return null;
+  return catAll().find(x=>(x.nombre||'').trim().toLowerCase()===q);
+}
+function renderSelector(){const s=$('selItem');s.innerHTML='<option value="">— Selecciona de tu catálogo —</option>';
+  const dl=$('catList');dl.innerHTML='';
+  catAll().forEach(x=>{const o=document.createElement('option');o.value=x.nombre;dl.appendChild(o);});
+  if(productos.length){const g=document.createElement('optgroup');g.label='Productos';productos.forEach(o=>g.appendChild(new Option(o.nombre,'p:'+o.id)));s.appendChild(g);}
+  if(servicios.length){const g=document.createElement('optgroup');g.label='Servicios';servicios.forEach(o=>g.appendChild(new Option(o.nombre,'s:'+o.id)));s.appendChild(g);}}
+$('addFromCat').onclick=()=>{const v=$('selItem').value;if(!v)return;const[t,id]=v.split(':');const src=t==='p'?productos:servicios;const o=src.find(x=>x.id===id);if(!o)return;
+  const sp=splitCodigo(o.nombre);
+  lineas.push({item:sp.item,desc:sp.desc||o.desc||'',cant:1,precio:+o.precio||0,costo:+o.costo||0});renderLineas();};
+$('addManual').onclick=()=>{lineas.push({item:'',desc:'',cant:1,precio:0,costo:0});renderLineas();};
+
+function renderLineas(){const b=$('itemsBody');b.innerHTML='';
+  lineas.forEach((l,i)=>{const tr=document.createElement('tr');tr.innerHTML=`
+    <td><input value="${esc(l.item)}" data-i="${i}" data-f="item" list="catList" placeholder="Escribe para buscar..." autocomplete="off"></td>
+    <td><input value="${esc(l.desc)}" data-i="${i}" data-f="desc"></td>
+    <td><input type="number" min="0" value="${l.cant}" data-i="${i}" data-f="cant"></td>
+    <td><input type="number" min="0" value="${l.precio}" data-i="${i}" data-f="precio"></td>
+    <td class="tright" style="font-weight:600">${fmt.format((+l.cant||0)*(+l.precio||0))}</td>
+    <td class="tright"><button class="btn btn-danger btn-sm" data-rm="${i}">✕</button></td>`;b.appendChild(tr);});
+  $('noItems').style.display=lineas.length?'none':'block';calc();}
+$('itemsBody').addEventListener('input',e=>{const i=e.target.dataset.i,f=e.target.dataset.f;if(i===undefined)return;
+  let v=e.target.value;if(f==='cant'||f==='precio')v=+v||0;lineas[i][f]=v;
+  if(f==='item'){const m=buscarEnCatalogo(v);
+    if(m){lineas[i].precio=+m.precio||0;lineas[i].costo=+m.costo||0;
+      const sp=splitCodigo(m.nombre);
+      lineas[i].item=sp.item;
+      if(!lineas[i].desc)lineas[i].desc=sp.desc||m.desc||'';
+      if(!(+lineas[i].cant))lineas[i].cant=1;
+      renderLineas();
+      const inp=document.querySelector(`#itemsBody input[data-i="${i}"][data-f="cant"]`);
+      if(inp){inp.focus();inp.select();}
+      return;}}
+  if(f==='cant'||f==='precio'){e.target.closest('tr').children[4].textContent=fmt.format((+lineas[i].cant||0)*(+lineas[i].precio||0));calc();}});
+$('itemsBody').addEventListener('click',e=>{const rm=e.target.dataset.rm;if(rm===undefined)return;lineas.splice(+rm,1);renderLineas();});
+
+function calc(){const sub=lineas.reduce((a,l)=>a+(+l.cant||0)*(+l.precio||0),0);
+  const dPct=+$('descuento').value||0,desc=sub*dPct/100,base=sub-desc;
+  const ivaOn=$('incIva').checked,ivaPct=+cfg.iva||0,iva=ivaOn?base*ivaPct/100:0,total=base+iva;
+  const costoTot=lineas.reduce((a,l)=>a+(+l.cant||0)*(+l.costo||0),0);
+  $('tSub').textContent=fmt.format(sub);
+  $('tDescLine').classList.toggle('hidden',!(dPct>0));$('tBaseLine').classList.toggle('hidden',!(dPct>0));
+  $('tDescPct').textContent=dPct;$('tDesc').textContent='- '+fmt.format(desc);$('tBase').textContent=fmt.format(base);
+  $('tIvaLine').classList.toggle('hidden',!ivaOn);$('tIvaPct').textContent=ivaPct;$('tIva').textContent=fmt.format(iva);
+  $('tTotal').textContent=fmt.format(total);
+  const g=$('gainLine');if(costoTot>0&&base>0){g.textContent='Ganancia estimada (no sale en el PDF): '+fmt.format(base-costoTot)+' • Costo: '+fmt.format(costoTot);}else g.textContent='';
+  return{sub,dPct,desc,base,ivaOn,ivaPct,iva,total};}
+$('descuento').addEventListener('input',calc);$('incIva').addEventListener('change',calc);
+
+/* ---------- CLIENTES ---------- */
+async function subirAdjunto(file){
+  if(file.size>10*1024*1024){alert('Máximo 10 MB');return null;}
+  const b64=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.readAsDataURL(file);});
+  const r=await fetch('/api/archivo',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre:file.name,data:b64})});
+  if(!r.ok)return null;return (await r.json()).file;
+}
+function confirmDel(que){
+  const t=prompt('⚠ Vas a eliminar '+que+'.\nEsta acción no se puede deshacer.\n\nPara confirmar escribe: ELIMINAR');
+  return t!==null&&t.trim().toUpperCase()==='ELIMINAR';
+}
+function renderCli(){
+  const sc=$('selCliente');sc.innerHTML='<option value="">— Selecciona un cliente registrado —</option>';
+  clientes.forEach(c=>sc.appendChild(new Option(c.nombre+(c.cedula?' ('+c.cedula+')':''),c.id)));
+  const b=$('cliBody');b.innerHTML='';
+  clientes.forEach(c=>b.insertAdjacentHTML('beforeend',`<tr><td>${esc(c.nombre)}</td><td>${esc(c.cedula||'')}</td><td>${esc(c.correo||'')}</td><td>${esc(c.tel||'')}</td>
+    <td>${c.rutFile?`<a href="/api/archivo/${encodeURIComponent(c.rutFile)}" target="_blank" class="btn btn-ghost btn-sm">📎 Ver</a> <button class="btn btn-ghost btn-sm" data-crut="${c.id}">↻</button>`:`<button class="btn btn-ghost btn-sm" data-crut="${c.id}">📎 Adjuntar</button>`}</td>
+    <td class="tright"><button class="btn btn-danger btn-sm" data-del-c="${c.id}">Eliminar</button></td></tr>`));
+  $('noCli').style.display=clientes.length?'none':'block';}
+$('addCli').onclick=async()=>{const n=$('cNombre').value.trim();if(!n){alert('Nombre requerido');return;}
+  const nc={id:uid(),nombre:n,cedula:$('cCedula').value.trim(),correo:$('cCorreo').value.trim(),tel:$('cTel').value.trim()};
+  const f=$('cRut').files[0];
+  if(f){$('cliMsg').textContent='Subiendo RUT...';const file=await subirAdjunto(f);
+    if(file){nc.rutFile=file;nc.rutNombre=f.name;$('cliMsg').textContent='';}else{$('cliMsg').textContent='⚠ RUT no se pudo subir (cliente se guarda igual)';}}
+  clientes.push(nc);
+  await sSet('clientes',clientes);['cNombre','cCedula','cCorreo','cTel'].forEach(i=>$(i).value='');$('cRut').value='';renderCli();};
+$('toggleNewCli').onclick=()=>$('newCliBox').classList.toggle('hidden');
+$('selCliente').addEventListener('change',()=>{const c=clientes.find(x=>x.id===$('selCliente').value);
+  $('cliResumen').textContent=c?`${c.nombre} · ${c.cedula||'sin doc'} · ${c.correo||'sin correo'} · ${c.tel||'sin tel'}`:'';});
+
+async function getCotCliente(){
+  const sel=clientes.find(x=>x.id===$('selCliente').value);
+  if(sel)return sel;
+  const n=$('cliNombre').value.trim();if(!n)return null;
+  const nc={id:uid(),nombre:n,cedula:$('cliCedula').value.trim(),correo:$('cliCorreo').value.trim(),tel:$('cliTel').value.trim()};
+  clientes.push(nc);await sSet('clientes',clientes);renderCli();return nc;}
+
+/* ---------- HISTORIAL ---------- */
+const ESTADOS={enviada:['📤 Enviada','#64748b'],negociacion:['🤝 En negociación','#b7791f'],aceptada:['✅ Aceptada','#0f9d58'],rechazada:['✖ Rechazada','#b00020']};
+function parseFechaCot(f){const m=(f||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):null;}
+function estadoCot(h){
+  if(h.estado&&h.estado!=='enviada')return h.estado;
+  const fv=parseFechaCot(h.fecha);const vd=parseInt(cfg.vigencia)||0;
+  if(fv&&vd&&(Date.now()-fv.getTime())>vd*86400000)return 'vencida';
+  return h.estado||'enviada';
+}
+function abonadoDe(h){return (h.pagos||[]).reduce((a,p)=>a+(+p.valor||0),0);}
+function renderHist(){const b=$('histBody');b.innerHTML='';
+  historial.slice().reverse().forEach(h=>{
+    const est=estadoCot(h);
+    const vv=h.pdfUrl?vistas[h.pdfUrl.split('/p/')[1]]:null;
+    const estSel=`<select data-est="${h.id}" style="font-size:11.5px;padding:4px 6px;border-radius:8px;border:1px solid var(--linea);color:${est==='vencida'?'#b00020':(ESTADOS[est]?.[1]||'#333')}">
+      ${Object.entries(ESTADOS).map(([k,v])=>`<option value="${k}" ${k===(h.estado||'enviada')?'selected':''}>${v[0]}</option>`).join('')}
+      ${est==='vencida'?'<option selected disabled>⏰ Vencida</option>':''}</select>`;
+    b.insertAdjacentHTML('beforeend',`<tr><td><b>${esc(h.numero)}</b>${vv?`<br><span class="muted" style="font-size:10.5px">👁 ${vv.n} vista${vv.n>1?'s':''}</span>`:''}</td><td>${esc(h.fecha)}${h.autor?'<br><span class="muted">por '+esc(h.autor)+'</span>':''}</td><td>${esc(h.cliente.nombre)}</td><td>${estSel}</td><td class="tright" style="font-weight:600">${fmt.format(h.total)}${(h.pagos&&h.pagos.length)?(()=>{const ab=abonadoDe(h);const sa=Math.max(0,h.total-ab);return sa===0?'<br><span style="color:#0f9d58;font-size:11px;font-weight:700">✓ PAGADA</span>':'<br><span style="color:#b7791f;font-size:11px">abonado '+fmt.format(ab)+' · saldo '+fmt.format(sa)+'</span>';})():''}</td><td class="tright"><button class="btn btn-ghost btn-sm" data-pagos="${h.id}">💰 Pagos</button> <button class="btn btn-ghost btn-sm" data-re-h="${h.id}">Ver PDF</button> <button class="btn btn-ghost btn-sm" data-edit-cot="${h.id}">✎ Editar</button> <button class="btn btn-doc btn-sm" data-to-orden="${h.id}">→ Orden</button> <button class="btn btn-danger btn-sm" data-del-h="${h.id}">✕</button></td></tr>`);});
+  $('noHist').style.display=historial.length?'none':'block';
+  renderCartera();renderDash();}
+function renderCartera(){
+  const b=$('cartBody');b.innerHTML='';let tot=0,n=0;
+  historial.slice().reverse().forEach(h=>{
+    const ab=abonadoDe(h);const sa=Math.max(0,(+h.total||0)-ab);
+    if(sa<=0)return;
+    if(estadoCot(h)==='rechazada')return;
+    tot+=sa;n++;
+    b.insertAdjacentHTML('beforeend',`<tr><td><b>${esc(h.numero)}</b></td><td>${esc(h.cliente.nombre)}</td>
+      <td class="tright">${fmt.format(h.total)}</td><td class="tright" style="color:#0f9d58">${fmt.format(ab)}</td>
+      <td class="tright" style="font-weight:700;color:#b7791f">${fmt.format(sa)}</td>
+      <td class="tright"><button class="btn btn-ghost btn-sm" data-pagos="${h.id}">💰 Registrar pago</button></td></tr>`);});
+  $('noCart').style.display=n?'none':'block';
+  $('cartTotal').textContent=n?('Total por cobrar: '+fmt.format(tot)+' en '+n+' cotización'+(n>1?'es':'')):'';
+}
+function barra(label,val,max,color){const pct=max>0?Math.round(val*100/max):0;
+  return `<div style="margin:5px 0"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${esc(label)}</span><b>${fmt.format(val)}</b></div>
+  <div style="background:#e3ebf2;border-radius:99px;height:8px"><div style="background:${color};width:${pct}%;height:100%;border-radius:99px"></div></div></div>`;}
+document.addEventListener('change',async e=>{
+  const id=e.target.dataset&&e.target.dataset.est;if(!id)return;
+  const h=historial.find(x=>x.id===id);if(!h)return;
+  h.estado=e.target.value;
+  await sSet('historial',historial);
+  renderHist();
+});
+function renderDash(){
+  const hoy=new Date();const mesAct=h=>{const f=parseFechaCot(h.fecha);return f&&f.getMonth()===hoy.getMonth()&&f.getFullYear()===hoy.getFullYear();};
+  const delMes=historial.filter(mesAct);
+  const cotizado=delMes.reduce((a,h)=>a+(+h.total||0),0);
+  const aceptadas=delMes.filter(h=>(h.estado||'')==='aceptada');
+  const vendido=aceptadas.reduce((a,h)=>a+(+h.total||0),0);
+  const cobradoMes=historial.reduce((a,h)=>a+(h.pagos||[]).filter(p=>{const f=new Date(p.fecha);return f.getMonth()===hoy.getMonth()&&f.getFullYear()===hoy.getFullYear();}).reduce((x,p)=>x+(+p.valor||0),0),0);
+  const st=(l,v,c)=>`<div class="pgstat"><div class="l">${l}</div><div class="v" style="${c?('color:'+c):''}">${v}</div></div>`;
+  $('dashStats').innerHTML=st('Cotizaciones del mes',delMes.length)+st('Total cotizado',fmt.format(cotizado))+st('Aceptadas',aceptadas.length+' · '+fmt.format(vendido),'#0f9d58')+st('Cobrado este mes',fmt.format(cobradoMes),'#0f9d58');
+  // por vendedor
+  const porV={};delMes.forEach(h=>{const a=h.autor||'—';porV[a]=(porV[a]||0)+(+h.total||0);});
+  const maxV=Math.max(1,...Object.values(porV));
+  $('dashVend').innerHTML=Object.entries(porV).sort((a,b)=>b[1]-a[1]).map(([k,v])=>barra(k,v,maxV,'var(--azul)')).join('')||'<p class="muted">Sin datos este mes.</p>';
+  // top productos
+  const porP={};delMes.forEach(h=>(h.lineas||[]).forEach(l=>{const k=(l.item||'').slice(0,30);if(!k)return;porP[k]=(porP[k]||0)+(+l.cant||0)*(+l.precio||0);}));
+  const top=Object.entries(porP).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxP=Math.max(1,...top.map(x=>x[1]));
+  $('dashTop').innerHTML=top.map(([k,v])=>barra(k,v,maxP,'#0f9d58')).join('')||'<p class="muted">Sin datos este mes.</p>';
+}
+
+/* ---------- AJUSTES ---------- */
+function fillCfg(){
+  $('aEmpresa').value=cfg.empresa;$('aMarca').value=cfg.marca;$('aEslogan').value=cfg.eslogan;$('aNit').value=cfg.nit;
+  $('aRep').value=cfg.rep;$('aCargo').value=cfg.cargo;$('aDir').value=cfg.dir;$('aCiudad').value=cfg.ciudad;
+  $('aWeb').value=cfg.web;$('aMail').value=cfg.mail;$('aTel1').value=cfg.tel1;$('aTel2').value=cfg.tel2;
+  $('aIg').value=cfg.ig;$('aFb').value=cfg.fb;$('aIva').value=cfg.iva;$('aPrefijo').value=cfg.prefijo;$('aConsec').value=cfg.consecutivo;
+  $('aCuerpo').value=cfg.cuerpo;$('aVigencia').value=cfg.vigencia;$('aAceptacion').value=cfg.aceptacion;
+  $('logoPrev').src=cfg.logo;$('firmaPrev').src=cfg.firma||'';}
+$('aLogo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{cfg.logo=r.result;$('logoPrev').src=r.result;};r.readAsDataURL(f);});
+$('aFirma').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{cfg.firma=r.result;$('firmaPrev').src=r.result;};r.readAsDataURL(f);});
+$('saveCfg').onclick=async()=>{
+  Object.assign(cfg,{empresa:$('aEmpresa').value.trim(),marca:$('aMarca').value.trim(),eslogan:$('aEslogan').value.trim(),nit:$('aNit').value.trim(),
+    rep:$('aRep').value.trim(),cargo:$('aCargo').value.trim(),dir:$('aDir').value.trim(),ciudad:$('aCiudad').value.trim(),
+    web:$('aWeb').value.trim(),mail:$('aMail').value.trim(),tel1:$('aTel1').value.trim(),tel2:$('aTel2').value.trim(),
+    ig:$('aIg').value.trim(),fb:$('aFb').value.trim(),iva:+$('aIva').value||0,prefijo:$('aPrefijo').value.trim()||'COT',consecutivo:+$('aConsec').value||1,
+    cuerpo:$('aCuerpo').value,vigencia:$('aVigencia').value,aceptacion:$('aAceptacion').value});
+  await sSet('cfg',cfg);applyCfg();$('cfgSaved').textContent='✓ Guardado';setTimeout(()=>$('cfgSaved').textContent='',2000);};
+$('changePass').onclick=async()=>{const p=prompt('Nueva contraseña (mín 4):');if(!p||p.length<4){alert('Contraseña inválida');return;}const r=await fetch('/api/auth/change',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})});alert(r.ok?'Contraseña actualizada':'No se pudo actualizar');};
+$('logoutBtn').onclick=async()=>{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'});location.reload();};
+function applyCfg(){$('logoTop').src=cfg.logo;$('ivaPct').textContent=cfg.iva;$('tIvaPct').textContent=cfg.iva;$('oIvaPct2').textContent=cfg.iva;$('oTIvaPct3').textContent=cfg.iva;$('nextNum').textContent='Próxima: '+cfg.prefijo+'-'+String(cfg.consecutivo).padStart(4,'0');
+  if(!$('cuerpo').value)$('cuerpo').value=cfg.cuerpo; if(!$('ciudadFecha').value)$('ciudadFecha').value=cfg.ciudad+', '+hoyTxt();}
+
+/* ---------- UTILS ---------- */
+function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function hoyTxt(){const m=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];const d=new Date();return d.getDate()+' de '+m[d.getMonth()]+' del '+d.getFullYear();}
+function numeroALetras(n){n=Math.round(n);if(n===0)return'CERO';
+  const U=['','UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE','VEINTE'];
+  const D=['','','','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'];
+  const C=['','CIENTO','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'];
+  const men100=x=>{if(x<=20)return U[x];if(x<30)return'VEINTI'+U[x-20];const d=Math.floor(x/10),u=x%10;return D[d]+(u?' Y '+U[u]:'');};
+  const men1000=x=>{if(x===100)return'CIEN';const c=Math.floor(x/100),r=x%100;return(c?C[c]+(r?' ':''):'')+(r?men100(r):'');};
+  const miles=x=>{if(x<1000)return men1000(x);const m=Math.floor(x/1000),r=x%1000;return(m===1?'MIL':men1000(m)+' MIL')+(r?' '+men1000(r):'');};
+  const mill=x=>{if(x<1000000)return miles(x);const m=Math.floor(x/1000000),r=x%1000000;return(m===1?'UN MILLÓN':miles(m)+' MILLONES')+(r?' '+miles(r):'');};
+  return mill(n).replace(/\s+/g,' ').trim();}
+
+/* ---------- GENERAR ---------- */
+$('clearCot').onclick=()=>{lineas=[];['cliNombre','cliCedula','cliCorreo','cliTel','descuento','obs','asunto'].forEach(i=>$(i).value='');$('selCliente').value='';$('incIva').checked=false;$('cuerpo').value=cfg.cuerpo;$('ciudadFecha').value=cfg.ciudad+', '+hoyTxt();$('shareBox').classList.add('hidden');renderLineas();};
+let generandoCot=false;
+$('genPdf').onclick=async()=>{
+  if(generandoCot)return;
+  const cliente=await getCotCliente();
+  if(!cliente){alert('Selecciona o registra un cliente');return;}
+  if(!lineas.length){alert('Agrega al menos un ítem');return;}
+  if(lineas.some(l=>!l.item.trim())){alert('Hay ítems sin nombre');return;}
+  generandoCot=true;$('genPdf').disabled=true;const txtBtn=$('genPdf').textContent;$('genPdf').textContent='⏳ Generando...';
+  try{
+  // releer estado del servidor para evitar duplicados y numeración repetida entre usuarios
+  historial=await sGet('historial')||[];
+  const cfgSrv=await sGet('cfg');if(cfgSrv&&cfgSrv.consecutivo>cfg.consecutivo)cfg.consecutivo=cfgSrv.consecutivo;
+  const t=calc();const numero=editCot?editCot.numero:(cfg.prefijo+'-'+String(cfg.consecutivo).padStart(4,'0'));
+  const aceptaToken=(editCot&&(historial.find(x=>x.id===editCot.id)||{}).aceptaToken)||Array.from(crypto.getRandomValues(new Uint8Array(14))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const cot={id:uid(),numero,aceptaToken,fecha:new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'}),autor:currentUser.username||'',
+    ciudadFecha:$('ciudadFecha').value.trim()||cfg.ciudad+', '+hoyTxt(),asunto:$('asunto').value.trim(),cuerpo:$('cuerpo').value.trim(),
+    cliente,lineas:JSON.parse(JSON.stringify(lineas)),obs:$('obs').value.trim(),
+    dPct:t.dPct,ivaOn:t.ivaOn,ivaPct:t.ivaPct,sub:t.sub,desc:t.desc,base:t.base,iva:t.iva,total:t.total};
+  if(editCot){
+    cot.id=editCot.id;cot.autor=editCot.autor||cot.autor;cot.editadoPor=currentUser.username||'';
+    const ix=historial.findIndex(x=>x.id===editCot.id);
+    if(ix>=0)historial[ix]=cot;else historial.push(cot);
+    await sSet('historial',historial);
+  }else{
+    historial.push(cot);await sSet('historial',historial);
+    cfg.consecutivo++;await sSet('cfg',cfg);applyCfg();
+  }
+  renderHist();
+  lastCot=cot;const doc=buildPDF(cot,true);
+  const url=await subirPdf(doc,'Cotizacion_'+numero);
+  if(url){cot.pdfUrl=url;await sSet('historial',historial);}
+  $('shNum').textContent=numero;$('shareBox').classList.remove('hidden');
+  $('shLink').textContent=url?url:'(enlace no disponible)';
+  if(url)$('shLinkA').href=url;
+  $('shareBox').scrollIntoView({behavior:'smooth'});
+  if(editCot)salirEdicion();
+  }finally{generandoCot=false;$('genPdf').disabled=false;$('genPdf').textContent=txtBtn;}};
+
+/* ---------- COMPARTIR ---------- */
+$('shPdf').onclick=()=>{if(lastCot)buildPDF(lastCot,true);};
+$('shCopy').onclick=async()=>{if(!lastCot?.pdfUrl)return;try{await navigator.clipboard.writeText(lastCot.pdfUrl);$('shMailMsg').textContent='✓ Enlace copiado';setTimeout(()=>$('shMailMsg').textContent='',2000);}catch(e){prompt('Copia el enlace:',lastCot.pdfUrl);}};
+$('shWa').onclick=()=>{if(!lastCot)return;const tel=(lastCot.cliente.tel||'').replace(/\D/g,'');const num=tel.startsWith('57')?tel:'57'+tel;
+  const link=lastCot.pdfUrl?'\n\nDescarga tu cotizacion aqui: '+lastCot.pdfUrl:'';
+  const msg=`Hola ${lastCot.cliente.nombre}, desde *${cfg.marca||cfg.empresa}* te compartimos la cotizacion *${lastCot.numero}* por *${fmt.format(lastCot.total)}*.${link}\n\nQuedamos atentos! 📶`;
+  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');};
+$('shMail').onclick=async()=>{
+  if(!lastCot)return;
+  const to=lastCot.cliente.correo||prompt('Correo del cliente:');
+  if(!to)return;
+  $('shMailMsg').textContent='Enviando correo...';
+  const sub=`Cotización ${lastCot.numero} - CONÉCTATE Comunicaciones`;
+  const body=`Cordial saludo ${lastCot.cliente.nombre},\n\nAdjuntamos la cotización ${lastCot.numero} por un valor de ${fmt.format(lastCot.total)}.\n${lastCot.pdfUrl?'También puede descargarla en: '+lastCot.pdfUrl+'\n':''}\n${cfg.vigencia}\n\nCualquier inquietud con gusto le atendemos.\n\n${cfg.rep}\n${cfg.cargo} - ${cfg.empresa}\n${cfg.tel1} / ${cfg.tel2}\n${cfg.web}`;
+  const pdfFile=lastCot.pdfUrl?lastCot.pdfUrl.split('/p/')[1]:null;
+  try{
+    const r=await fetch('/api/correo',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,subject:sub,text:body,pdfFile})});
+    const j=await r.json();
+    if(r.ok){$('shMailMsg').textContent='✓ Correo enviado a '+to+' con el PDF adjunto';}
+    else{$('shMailMsg').textContent='⚠ '+(j.error||'No se pudo enviar');window.open('mailto:'+to+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body),'_blank');}
+  }catch(e){$('shMailMsg').textContent='⚠ Error de conexión';}
+};
+
+/* ---------- PDF ---------- */
+const PDF_AZUL=[0,125,183],PDF_NAVY=[20,57,92],PDF_GRIS=[100,116,139],PDF_CLARO=[245,249,252];
+function drawChrome(doc){
+  const W=210,M=15,azul=PDF_AZUL,navy=PDF_NAVY,gris=PDF_GRIS,claro=PDF_CLARO;
+  doc.setFillColor(255,255,255);doc.rect(0,0,W,42,'F');
+  try{const pr=doc.getImageProperties(cfg.logo);const lw=44,lh=lw*pr.height/pr.width;doc.addImage(cfg.logo,'PNG',M,7,lw,lh);}catch(e){}
+  doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(...navy);doc.text(cfg.empresa,W-M,13,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...gris);doc.text('NIT '+cfg.nit,W-M,18,{align:'right'});
+  doc.setFont('helvetica','italic');doc.setTextColor(...azul);doc.text(cfg.eslogan,W-M,22.5,{align:'right'});
+  doc.setFillColor(...azul);doc.rect(0,42,W,2.4,'F');doc.setFillColor(...claro);doc.rect(0,44.4,W,2,'F');
+  doc.setFillColor(...azul);doc.rect(0,282,W,15,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(cfg.dir,W/2,287.5,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(7.6);doc.text('WhatsApp '+cfg.tel1+'   |   '+cfg.tel2+'   |   '+cfg.mail,W/2,291.5,{align:'center'});
+  doc.setFont('helvetica','bold');doc.setFontSize(7.6);doc.text(cfg.web+'      f '+cfg.fb+'      IG '+cfg.ig,W/2,295.2,{align:'center'});
+}
+async function subirPdf(doc,filename){
+  try{
+    const b64=doc.output('datauristring').split(',')[1];
+    const r=await fetch('/api/pdf',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename,data:b64})});
+    if(!r.ok)return null;const j=await r.json();
+    return (j.url&&j.url.startsWith('http'))?j.url:location.origin+(j.url||('/p/'+j.file));
+  }catch(e){console.error('subirPdf',e);return null;}
+}
+function buildPDF(c,download){
+  const{jsPDF}=window.jspdf;const doc=new jsPDF('p','mm','a4');
+  const W=210,M=15,azul=PDF_AZUL,navy=PDF_NAVY,gris=PDF_GRIS,claro=PDF_CLARO;
+  const top=54,bottom=272;
+  function pageChrome(){drawChrome(doc);}
+
+  pageChrome();
+  let y=top;
+  // Ciudad y fecha
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(...navy);
+  doc.text(c.ciudadFecha,M,y);y+=9;
+  // Señores
+  doc.setFont('helvetica','bold');doc.text('Señores',M,y);y+=5;
+  doc.text(c.cliente.nombre.toUpperCase(),M,y);y+=5;
+  doc.setFont('helvetica','normal');
+  if(c.cliente.cedula){doc.text('NIT/CC: '+c.cliente.cedula,M,y);y+=5;}
+  doc.text(cfg.ciudad,M,y);y+=8;
+  // Ref
+  if(c.asunto){doc.setFont('helvetica','bold');doc.text('Ref: Propuesta comercial para '+c.asunto,M,y);y+=7;}
+  // Cuerpo
+  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(50,60,70);
+  const cuerpo=doc.splitTextToSize(c.cuerpo,W-2*M);
+  cuerpo.forEach(ln=>{if(y>bottom){doc.addPage();pageChrome();y=top;}doc.text(ln,M,y);y+=4.8;});
+  y+=4;
+
+  // Tabla
+  const body=c.lineas.map((l,i)=>[i+1,l.item,l.desc||'',String(l.cant),fmt.format(l.precio),fmt.format((+l.cant||0)*(+l.precio||0))]);
+  doc.autoTable({startY:y,head:[['#','Ítem','Descripción','Cant.','Vlr unitario','Vlr total']],body,theme:'grid',margin:{left:M,right:M,top:top,bottom:20},
+    headStyles:{fillColor:azul,textColor:255,fontStyle:'bold',fontSize:9},bodyStyles:{fontSize:8.8,textColor:[40,50,60],cellPadding:2.1},
+    alternateRowStyles:{fillColor:[247,251,253]},
+    columnStyles:{0:{cellWidth:8,halign:'center'},3:{cellWidth:15,halign:'center'},4:{cellWidth:30,halign:'right'},5:{cellWidth:32,halign:'right'}},
+    didDrawPage:()=>pageChrome()});
+  y=doc.lastAutoTable.finalY+8;
+
+  // Totales
+  const boxX=W-M-72,boxW=72;
+  const need=h=>{if(y+h>bottom){doc.addPage();pageChrome();y=top;}};
+  need(30);
+  const tline=(lbl,val,bold,fill)=>{if(fill){doc.setFillColor(...azul);doc.rect(boxX,y-4.7,boxW,7.6,'F');doc.setTextColor(255,255,255);}else doc.setTextColor(...(bold?navy:gris));
+    doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(bold?11:9.5);doc.text(lbl,boxX+2,y);doc.text(val,boxX+boxW-2,y,{align:'right'});y+=fill?8:6;};
+  tline('Subtotal',fmt.format(c.sub),false);
+  if(c.dPct>0){tline('Descuento ('+c.dPct+'%)','- '+fmt.format(c.desc),false);tline('Base gravable',fmt.format(c.base),false);}
+  if(c.ivaOn)tline('IVA ('+c.ivaPct+'%)',fmt.format(c.iva),false);
+  y+=1;tline('TOTAL',fmt.format(c.total),true,true);
+  // Son
+  doc.setTextColor(...navy);doc.setFont('helvetica','italic');doc.setFontSize(8.5);
+  doc.text('Son: '+numeroALetras(c.total)+' PESOS M/CTE.',M,y-14,{maxWidth:W/2});
+  y+=4;
+  // Observaciones
+  if(c.obs){need(14);doc.setFont('helvetica','bold');doc.setTextColor(...navy);doc.setFontSize(9);doc.text('Observaciones:',M,y);y+=5;doc.setFont('helvetica','normal');doc.setTextColor(...gris);const ob=doc.splitTextToSize(c.obs,W-2*M);ob.forEach(l=>{doc.text(l,M,y);y+=4.6;});y+=2;}
+  // Vigencia / aceptación
+  need(20);doc.setFontSize(8.6);doc.setTextColor(...gris);doc.setFont('helvetica','bold');doc.text('CONDICIONES',M,y);y+=5;doc.setFont('helvetica','normal');
+  [cfg.vigencia,cfg.aceptacion].forEach(tx=>{const ls=doc.splitTextToSize('• '+tx,W-2*M);ls.forEach(l=>{need(6);doc.text(l,M,y);y+=4.4;});});
+  y+=8;
+  // Firma
+  need(30);
+  if(cfg.firma){try{const fp=doc.getImageProperties(cfg.firma);const fw=42,fh=fw*fp.height/fp.width;doc.addImage(cfg.firma,'PNG',M+4,y-fh+2,fw,fh);}catch(e){}}
+  doc.setDrawColor(...gris);doc.setLineWidth(0.3);doc.line(M,y,M+60,y);y+=5;
+  doc.setFont('helvetica','bold');doc.setTextColor(...navy);doc.setFontSize(10);doc.text(cfg.rep,M,y);y+=5;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...gris);doc.text(cfg.cargo,M,y);y+=4.6;
+  doc.setFont('helvetica','bolditalic');doc.setTextColor(...azul);doc.text(cfg.empresa,M,y);
+
+  // Botón ACEPTO ESTA PROPUESTA (enlace a la aceptación en línea)
+  if(c.aceptaToken){
+    const uAc=location.origin+'/aceptar.html?t='+c.aceptaToken;
+    y+=14;need(30);
+    const bw=96,bh=13,bx=(W-bw)/2;
+    doc.setFillColor(...azul);doc.roundedRect(bx,y,bw,bh,2.5,2.5,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(11.5);doc.setTextColor(255,255,255);
+    doc.text('ACEPTO ESTA PROPUESTA',W/2,y+8.4,{align:'center'});
+    doc.link(bx,y,bw,bh,{url:uAc});
+    y+=bh+5;
+    doc.setFont('helvetica','normal');doc.setFontSize(7.6);doc.setTextColor(...gris);
+    doc.text('Para aceptar esta propuesta haz clic en el botón, o copia este enlace en tu navegador:',W/2,y,{align:'center'});y+=3.8;
+    doc.setTextColor(...azul);doc.textWithLink(uAc,W/2,y,{align:'center',url:uAc});
+  }
+
+  if(download)doc.save('Cotizacion_'+c.numero+'_'+c.cliente.nombre.replace(/\s+/g,'_')+'.pdf');
+  else window.open(doc.output('bloburl'),'_blank');
+  return doc;
+}
+
+/* ---------- ORDEN DE SERVICIO ---------- */
+let oRows=[];
+const DEF_COND='1. Los valores presentados INCLUYEN el IVA del 19%.\n2. Los valores presentados están en pesos colombianos.\n3. El servicio está sujeto a viabilidad técnica positiva al momento de la instalación.\n4. No se incluyen valores de obras civiles; en caso de presentarse, se cotizarán por separado.\n5. FIRMA ELECTRÓNICA: Las partes acuerdan suscribir el presente documento mediante firma electrónica capturada en la plataforma de LA EMPRESA, y reconocen que dicha firma tiene plena validez y fuerza probatoria conforme a la Ley 527 de 1999, el Decreto 2364 de 2012 y demás normas concordantes de la República de Colombia, con los mismos efectos jurídicos de una firma manuscrita.\n6. TRATAMIENTO DE DATOS: Los datos personales aquí consignados serán tratados conforme a la Ley 1581 de 2012 y la política de tratamiento de datos de MI EMPRESA COMUNICACIONES DEL PACÍFICO S.A.S.';
+function renderOrdenSelect(){const s=$('oCliente');s.innerHTML='<option value="">— Selecciona un cliente —</option>';clientes.forEach(c=>s.appendChild(new Option(c.nombre+(c.cedula?' ('+c.cedula+')':''),c.id)));}
+$('oCliente').addEventListener('change',()=>{const c=clientes.find(x=>x.id===$('oCliente').value);if(c)$('oNumDoc').value=c.cedula||'';});
+$('oToNewCli').onclick=()=>{document.querySelector('#tabs button[data-t="clientes"]').click();};
+$('oAddRow').onclick=()=>{oRows.push({serv:'INTERNET DEDICADO',bw:'',ciudad:cfg.ciudad,dir:'',inst:'',mes:''});renderORows();};
+function renderORows(){const b=$('oBody');b.innerHTML='';oRows.forEach((r,i)=>{const tr=document.createElement('tr');tr.innerHTML=`
+  <td><input value="${esc(r.serv)}" data-oi="${i}" data-of="serv" list="catList" autocomplete="off"></td>
+  <td><input value="${esc(r.bw)}" data-oi="${i}" data-of="bw" style="width:78px" placeholder="100MB"></td>
+  <td><input value="${esc(r.ciudad)}" data-oi="${i}" data-of="ciudad" style="width:90px"></td>
+  <td><input value="${esc(r.dir)}" data-oi="${i}" data-of="dir"></td>
+  <td><input value="${esc(r.inst)}" data-oi="${i}" data-of="inst" style="width:120px" placeholder="$ 300.000 + IVA"></td>
+  <td><input value="${esc(r.mes)}" data-oi="${i}" data-of="mes" style="width:120px" placeholder="$ 350.000 + IVA"></td>
+  <td><button class="btn btn-danger btn-sm" data-orm="${i}">✕</button></td>`;b.appendChild(tr);});
+  $('oNoRows').style.display=oRows.length?'none':'block';}
+let oItems=[];
+function renderOVRows(){
+  const b=$('ovBody');b.innerHTML='';
+  oItems.forEach((l,i)=>b.insertAdjacentHTML('beforeend',`<tr>
+    <td><input value="${esc(l.item)}" data-vi="${i}" data-vf="item" list="catList" placeholder="Escribe para buscar..." autocomplete="off"></td>
+    <td><input value="${esc(l.desc)}" data-vi="${i}" data-vf="desc"></td>
+    <td><input type="number" min="1" value="${l.cant}" data-vi="${i}" data-vf="cant"></td>
+    <td><input type="number" min="0" value="${l.precio}" data-vi="${i}" data-vf="precio"></td>
+    <td class="tright" style="font-weight:600">${fmt.format((+l.cant||0)*(+l.precio||0))}</td>
+    <td><button class="btn btn-danger btn-sm" data-vrm="${i}">✕</button></td></tr>`));
+  $('ovNoRows').style.display=oItems.length?'none':'block';
+  autoSubVenta();
+}
+function autoSubVenta(){
+  if($('oTipo').value!=='venta')return;
+  $('oSub').value=oItems.reduce((a,l)=>a+(+l.cant||0)*(+l.precio||0),0)||'';
+  ordenCalc();
+}
+toggleTipoOrden();
+$('ovAddRow').onclick=()=>{oItems.push({item:'',desc:'',cant:1,precio:0});renderOVRows();};
+$('ovBody').addEventListener('input',e=>{const i=e.target.dataset.vi,f=e.target.dataset.vf;if(i===undefined)return;
+  let v=e.target.value;if(f==='cant'||f==='precio')v=+v||0;oItems[i][f]=v;
+  if(f==='item'){const m=buscarEnCatalogo(e.target.value);
+    if(m){oItems[i].precio=+m.precio||0;
+      const sp=splitCodigo(m.nombre);
+      oItems[i].item=sp.item;
+      if(!oItems[i].desc)oItems[i].desc=sp.desc||m.desc||'';
+      if(!(+oItems[i].cant))oItems[i].cant=1;
+      renderOVRows();
+      const inp=document.querySelector(`#ovBody input[data-vi="${i}"][data-vf="cant"]`);
+      if(inp){inp.focus();inp.select();}
+      return;}}
+  if(f==='cant'||f==='precio')renderOVRows();
+});
+$('ovBody').addEventListener('click',e=>{const rm=e.target.dataset.vrm;if(rm===undefined)return;oItems.splice(+rm,1);renderOVRows();});
+function toggleTipoOrden(){
+  const v=$('oTipo').value==='venta';
+  $('cardVenta').classList.toggle('hidden',!v);
+  $('cardInternet').classList.toggle('hidden',v);
+  $('oDirGenBox').style.display=v?'':'none';
+  $('oCiudadGenBox').style.display=v?'':'none';
+  if(v)autoSubVenta();else autoSub();
+}
+$('oTipo').addEventListener('change',toggleTipoOrden);
+function autoSub(){if($('oTipo').value==='venta')return;$('oSub').value=oRows.reduce((a,r)=>a+numVal(r.inst),0)||'';ordenCalc();}
+$('oBody').addEventListener('input',e=>{const i=e.target.dataset.oi,f=e.target.dataset.of;if(i===undefined)return;oRows[i][f]=e.target.value;
+  if(f==='serv'){const m=buscarEnCatalogo(e.target.value);
+    if(m&&!oRows[i].inst){oRows[i].inst=String(m.precio||'');renderORows();autoSub();return;}}
+  if(f==='inst')autoSub();else if(f==='mes')ordenCalc();});
+$('oBody').addEventListener('click',e=>{const rm=e.target.dataset.orm;if(rm===undefined)return;oRows.splice(+rm,1);renderORows();autoSub();});
+/* ---------- IMPORTADOR EXCEL PROVEEDOR ---------- */
+let impWB=null,impRows=[];
+const impNum=x=>{const d=String(x==null?'':x).replace(/[^0-9]/g,'');return +d||0;};
+function impCargarFilas(){
+  if(!impWB)return;
+  const h=$('impHoja').value;
+  impRows=[];
+  const hojas=h==='*'?impWB.SheetNames:[h];
+  hojas.forEach(nm=>{
+    const ws=impWB.Sheets[nm];if(!ws)return;
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+    impRows=impRows.concat(rows);
+  });
+}
+$('impFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const buf=await f.arrayBuffer();
+    impWB=XLSX.read(buf,{type:'array'});
+    // selector de hojas: por defecto la de más filas de datos (o todas si hay varias con datos)
+    const conteos=impWB.SheetNames.map(nm=>{const ws=impWB.Sheets[nm];const r=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});return{nm,n:r.length};});
+    const conDatos=conteos.filter(c=>c.n>3);
+    $('impHoja').innerHTML='<option value="*">📚 Todas las hojas ('+impWB.SheetNames.length+')</option>'+conteos.map(c=>`<option value="${esc(c.nm)}">${esc(c.nm)} (${c.n} filas)</option>`).join('');
+    $('impHoja').value=conDatos.length>1?'*':(conDatos[0]?.nm||impWB.SheetNames[0]);
+    impCargarFilas();
+    if(!impRows.length){alert('El archivo está vacío');return;}
+    const sample=impRows.filter(r=>r.some(c=>c!=='')).slice(0,120);
+    const nCols=Math.max(...sample.map(r=>r.length));
+    const header=(impRows.find(r=>r.filter(c=>c!=='').length>=3)||[]);
+    const ops=i=>{const letra=String.fromCharCode(65+(i%26));const hh=String(header[i]||'').slice(0,22);return `<option value="${i}">Col ${letra}${hh?(' — '+esc(hh)):''}</option>`;};
+    let opts='';for(let i=0;i<nCols;i++)opts+=ops(i);
+    $('impColNom').innerHTML=opts;$('impColPre').innerHTML=opts;
+    $('impColCod').innerHTML='<option value="-1">(ninguna)</option>'+opts;
+    $('impColDesc').innerHTML='<option value="-1">(ninguna)</option>'+opts;
+    // auto-detección
+    const st={txt:{},num:{},cod:{}};
+    sample.forEach(r=>{for(let i=0;i<nCols;i++){const v=r[i];if(v===''||v==null)continue;
+      const sv=String(v).trim();const n=impNum(sv);
+      if(n>500&&sv.replace(/[0-9.,$\s]/g,'')==='')st.num[i]=(st.num[i]||0)+1;
+      else if(sv.length>18)st.txt[i]=(st.txt[i]||0)+1;
+      else if(sv.length>=2&&sv.length<=16&&/[A-Za-z]/.test(sv)&&/[0-9]/.test(sv))st.cod[i]=(st.cod[i]||0)+1;}});
+    const best=o=>{const ks=Object.keys(o);if(!ks.length)return null;return ks.sort((a,b)=>o[b]-o[a]||a-b)[0];};
+    if(best(st.txt)!=null)$('impColNom').value=best(st.txt);
+    if(best(st.num)!=null)$('impColPre').value=best(st.num);
+    if(best(st.cod)!=null)$('impColCod').value=best(st.cod);
+    $('impSkip').value=0;
+    $('impMap').classList.remove('hidden');
+    impPreview();
+  }catch(err){alert('No se pudo leer el archivo: '+err.message);}
+});
+$('impHoja').addEventListener('change',()=>{impCargarFilas();impPreview();});
+function impItems(){
+  const cc=+$('impColCod').value,cn=+$('impColNom').value,cp=+$('impColPre').value,cd=+$('impColDesc').value,skip=+$('impSkip').value||0;
+  const u=+$('impUtil').value||0;
+  const items=[],vistos={};
+  impRows.slice(skip).forEach(r=>{
+    let nombre=String(r[cn]||'').trim().replace(/\s+/g,' ');
+    const costo=impNum(r[cp]);
+    if(!nombre||costo<=0)return;
+    if(/^(precio|codigo|c[oó]digo|descripci[oó]n|total|subtotal)$/i.test(nombre))return;
+    const cod=cc>=0?String(r[cc]||'').trim():'';
+    if(cod&&!/^(codigo|c[oó]digo)$/i.test(cod))nombre=cod+' '+nombre;
+    if(nombre.length>110)nombre=nombre.slice(0,110);
+    const it={nombre,desc:cd>=0?String(r[cd]||'').trim():'',costo,util:u,precio:Math.round(costo*(1+u/100))};
+    const k=nombre.toLowerCase();
+    if(vistos[k]!==undefined)items[vistos[k]]=it;else{vistos[k]=items.length;items.push(it);}
+  });
+  return items;
+}
+function impPreview(){
+  $('impUtilTxt').textContent=+$('impUtil').value||0;
+  const items=impItems();
+  const b=$('impPrev');b.innerHTML='';
+  items.slice(0,8).forEach(it=>b.insertAdjacentHTML('beforeend',`<tr><td>${esc(it.nombre)}</td><td class="tright">${fmt.format(it.costo)}</td><td class="tright" style="font-weight:600">${fmt.format(it.precio)}</td></tr>`));
+  if(items.length>8)b.insertAdjacentHTML('beforeend',`<tr><td colspan="3" class="muted" style="text-align:center">… y ${items.length-8} más</td></tr>`);
+  const ya=new Set(productos.map(p=>p.nombre.trim().toLowerCase()));
+  const nuevos=items.filter(i=>!ya.has(i.nombre.toLowerCase())).length;
+  $('impStats').textContent=items.length?(`${items.length} productos detectados → ${nuevos} nuevos, ${items.length-nuevos} actualizarán su precio.`):'No se detectaron productos válidos — revisa hoja, columnas y filas a saltar.';
+}
+['impColCod','impColNom','impColPre','impColDesc','impSkip','impUtil'].forEach(id=>$(id).addEventListener('change',impPreview));
+$('impUtil').addEventListener('input',impPreview);
+let importando=false;
+$('impGo').onclick=async()=>{
+  if(importando)return;
+  const items=impItems();
+  if(!items.length){alert('Nada que importar');return;}
+  if(!confirm(`Se importarán ${items.length} productos con ${+$('impUtil').value||0}% de utilidad.\nLos existentes (mismo nombre) actualizarán costo y precio.\n¿Continuar?`))return;
+  importando=true;$('impGo').disabled=true;$('impMsg').textContent='Importando...';
+  try{
+    productos=await sGet('productos')||[];
+    const idx={};productos.forEach(p=>idx[p.nombre.trim().toLowerCase()]=p);
+    let nuevos=0,act=0;
+    items.forEach(it=>{
+      const k=it.nombre.toLowerCase();
+      if(idx[k]){Object.assign(idx[k],{costo:it.costo,util:it.util,precio:it.precio});if(it.desc)idx[k].desc=it.desc;act++;}
+      else{const np={id:uid(),...it};productos.push(np);idx[k]=np;nuevos++;}
+    });
+    await sSet('productos',productos);
+    renderCat();
+    $('impMsg').textContent=`✓ Importación completa: ${nuevos} nuevos, ${act} actualizados.`;
+    $('impFile').value='';
+  }finally{importando=false;$('impGo').disabled=false;}
+};
+/* ---------- COMBOS DE COTIZACION RAPIDA ---------- */
+let combos=[],cbEdit=null;
+function seedCombos(){
+  const cam={item:'Cámara seguridad hogar',desc:'Cámara para kit hogar 2MP',precio:99900};
+  const base=n=>[
+    {...cam,cant:n},
+    {item:'DVR 8 canales',desc:'Grabador para kit de cámaras',cant:1,precio:0},
+    {item:'Disco duro 1TB videovigilancia',desc:'Almacenamiento de grabaciones',cant:1,precio:0},
+    {item:'Caja pasacable',desc:'Caja de conexión por cámara',cant:n,precio:0},
+    {item:'Cable UTP (metro)',desc:'Cableado estimado del kit',cant:n*10,precio:0},
+    {item:'Mano de obra instalación cámaras',desc:'Instalación y configuración del kit',cant:1,precio:0}
+  ];
+  return [
+    {id:uid(),nombre:'⚡ Kit 4 cámaras hogar',lineas:base(4)},
+    {id:uid(),nombre:'⚡ Kit 8 cámaras hogar',lineas:base(8)}
+  ];
+}
+async function loadCombos(){
+  const v=await sGet('combos');
+  if(v===null||v===undefined){combos=seedCombos();await sSet('combos',combos);}
+  else combos=v;
+  renderCombosBar();
+}
+function renderCombosBar(){
+  const b=$('combosBar');b.innerHTML='';
+  if(!combos.length){b.innerHTML='<span class="muted">Sin combos aún — créalos en ⚙ Administrar.</span>';return;}
+  combos.forEach(c=>{
+    const tot=c.lineas.reduce((a,l)=>{const p=+l.precio>0?+l.precio:(buscarEnCatalogo(l.item)?.precio||0);return a+(+l.cant||0)*p;},0);
+    b.insertAdjacentHTML('beforeend',`<button class="btn btn-doc" data-combo="${c.id}" style="margin:3px">${esc(c.nombre)}<br><span style="font-size:10.5px;font-weight:400;opacity:.85">${c.lineas.length} ítems · ${fmt.format(tot)}</span></button>`);
+  });
+}
+function aplicarCombo(id){
+  const c=combos.find(x=>x.id===id);if(!c)return;
+  let ceros=0;
+  c.lineas.forEach(l=>{
+    const m=buscarEnCatalogo(l.item);
+    const precio=+l.precio>0?+l.precio:(m?+m.precio||0:0);
+    const costo=m?+m.costo||0:0;
+    if(precio<=0)ceros++;
+    const sp=splitCodigo(m?m.nombre:l.item);
+    lineas.push({item:sp.item,desc:l.desc||sp.desc||(m?m.desc||'':''),cant:+l.cant||1,precio,costo});
+  });
+  renderLineas();
+  $('combosMsg').textContent='✓ '+c.nombre+' agregado ('+c.lineas.length+' ítems)'+(ceros?` — ⚠ ${ceros} quedaron en $0: ponles precio o créalos en el catálogo`:'');
+  setTimeout(()=>$('combosMsg').textContent='',6000);
+  document.querySelector('#itemsBody')?.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cbRender(){
+  const sel=$('cbSel');sel.innerHTML='<option value="">➕ (nuevo combo)</option>'+combos.map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+  sel.value=cbEdit&&cbEdit.id&&combos.some(x=>x.id===cbEdit.id)?cbEdit.id:'';
+  $('cbNombre').value=cbEdit?cbEdit.nombre:'';
+  const b=$('cbBody');b.innerHTML='';
+  (cbEdit?cbEdit.lineas:[]).forEach((l,i)=>b.insertAdjacentHTML('beforeend',`<tr>
+    <td><input value="${esc(l.item)}" data-ci="${i}" data-cf="item" list="catList" placeholder="Busca en el catálogo..." autocomplete="off"></td>
+    <td><input value="${esc(l.desc||'')}" data-ci="${i}" data-cf="desc"></td>
+    <td><input type="number" min="1" value="${l.cant}" data-ci="${i}" data-cf="cant"></td>
+    <td><input type="number" min="0" value="${l.precio}" data-ci="${i}" data-cf="precio" title="0 = precio del catálogo al cotizar"></td>
+    <td><button class="btn btn-danger btn-sm" data-crm="${i}">✕</button></td></tr>`));
+}
+$('combosAdmin').onclick=()=>{cbEdit={id:null,nombre:'',lineas:[{item:'',desc:'',cant:1,precio:0}]};cbRender();$('cbMsg').textContent='';$('combosModal').classList.remove('hidden');};
+$('cbClose').onclick=()=>$('combosModal').classList.add('hidden');
+$('combosModal').addEventListener('click',e=>{if(e.target.id==='combosModal')$('combosModal').classList.add('hidden');});
+$('cbSel').addEventListener('change',()=>{
+  const id=$('cbSel').value;
+  cbEdit=id?JSON.parse(JSON.stringify(combos.find(x=>x.id===id))):{id:null,nombre:'',lineas:[{item:'',desc:'',cant:1,precio:0}]};
+  cbRender();
+});
+$('cbAddLinea').onclick=()=>{if(!cbEdit)return;cbEdit.lineas.push({item:'',desc:'',cant:1,precio:0});cbRender();};
+$('cbBody').addEventListener('input',e=>{
+  const i=e.target.dataset.ci,f=e.target.dataset.cf;if(i===undefined||!cbEdit)return;
+  let v=e.target.value;if(f==='cant'||f==='precio')v=+v||0;cbEdit.lineas[i][f]=v;
+  if(f==='item'){const m=buscarEnCatalogo(e.target.value);
+    if(m){cbEdit.lineas[i].item=m.nombre;cbEdit.lineas[i].precio=0;if(!cbEdit.lineas[i].desc)cbEdit.lineas[i].desc=m.desc||'';cbRender();}}
+});
+$('cbBody').addEventListener('click',e=>{const rm=e.target.dataset.crm;if(rm===undefined||!cbEdit)return;cbEdit.lineas.splice(+rm,1);cbRender();});
+$('cbGuardar').onclick=async()=>{
+  if(!cbEdit)return;
+  cbEdit.nombre=$('cbNombre').value.trim();
+  cbEdit.lineas=cbEdit.lineas.filter(l=>l.item.trim());
+  if(!cbEdit.nombre){$('cbMsg').textContent='⚠ Ponle nombre al combo';return;}
+  if(!cbEdit.lineas.length){$('cbMsg').textContent='⚠ Agrega al menos una línea';return;}
+  combos=await sGet('combos')||[];
+  if(cbEdit.id){const ix=combos.findIndex(x=>x.id===cbEdit.id);if(ix>=0)combos[ix]=cbEdit;else combos.push(cbEdit);}
+  else{cbEdit.id=uid();combos.push(cbEdit);}
+  await sSet('combos',combos);
+  renderCombosBar();cbRender();
+  $('cbMsg').textContent='✓ Combo guardado';setTimeout(()=>$('cbMsg').textContent='',2500);
+};
+$('cbDel').onclick=async()=>{
+  if(!cbEdit||!cbEdit.id){$('cbMsg').textContent='Selecciona un combo guardado';return;}
+  if(!confirmDel('el combo "'+cbEdit.nombre+'"'))return;
+  combos=(await sGet('combos')||[]).filter(x=>x.id!==cbEdit.id);
+  await sSet('combos',combos);
+  cbEdit={id:null,nombre:'',lineas:[{item:'',desc:'',cant:1,precio:0}]};
+  renderCombosBar();cbRender();
+};
+let pagosCotId=null,pagosInfo={},pagosData=null;
+async function abrirPagos(cotId){
+  pagosCotId=cotId;
+  const cot=historial.find(x=>x.id===cotId);
+  pagosInfo={tel:(cot?.cliente?.tel||''),nombre:(cot?.cliente?.nombre||''),numero:(cot?.numero||'')};
+  const r=await fetch('/api/pagos/'+encodeURIComponent(cotId),{credentials:'same-origin'});
+  if(!r.ok){alert('No se pudo cargar los pagos');return;}
+  const d=await r.json();
+  $('pgNum').textContent=d.numero;$('pgCliente').textContent=d.cliente;
+  renderPagos(d);
+  $('pgValor').value='';$('pgNota').value='';$('pgComp').value='';$('pgMsg').textContent='';$('pgNotif').checked=true;
+  $('pagosModal').classList.remove('hidden');
+}
+function waNum(){const t=(pagosInfo.tel||'').replace(/\D/g,'');return t?(t.startsWith('57')?t:'57'+t):null;}
+function renderPagos(d){
+  pagosData=d;
+  $('pgTotal').textContent=fmt.format(d.total);
+  $('pgAbonado').textContent=fmt.format(d.abonado);
+  $('pgSaldo').textContent=d.saldo===0?'✓ Al día':fmt.format(d.saldo);
+  $('pgSaldoBox').classList.toggle('pagada',d.saldo===0);
+  const pct=d.total>0?Math.min(100,Math.round(d.abonado*100/d.total)):0;
+  $('pgFill').style.width=pct+'%';$('pgPct').textContent=pct+'% pagado';
+  const b=$('pgBody');b.innerHTML='';
+  (d.pagos||[]).slice().reverse().forEach(p=>{
+    b.insertAdjacentHTML('beforeend',`<tr><td>${new Date(p.fecha).toLocaleDateString('es-CO')}</td>
+      <td style="font-weight:600">${fmt.format(p.valor)}</td><td>${esc(p.metodo||'')}</td>
+      <td class="muted">${esc(p.nota||'')}${p.comprobanteFile?` <a href="/api/archivo/${encodeURIComponent(p.comprobanteFile)}" target="_blank" style="color:var(--azul);font-weight:600">📎 comprobante</a>`:''}</td>
+      <td class="muted">${esc(p.registradoPor||'')}</td>
+      <td class="tright"><button class="btn btn-wa btn-sm" data-pgwa="${p.id}">📲</button> ${currentUser.role==='admin'?`<button class="btn btn-danger btn-sm" data-pgdel="${p.id}">✕</button>`:''}</td></tr>`);});
+  $('pgEmpty').style.display=(d.pagos&&d.pagos.length)?'none':'block';
+}
+$('pgEstadoWa').onclick=()=>{
+  const num=waNum();
+  if(!num){alert('El cliente no tiene teléfono registrado. Agrégalo en Clientes.');return;}
+  const d=pagosData;if(!d)return;
+  const detalle=(d.pagos||[]).map(p=>'• '+new Date(p.fecha).toLocaleDateString('es-CO')+': '+fmt.format(p.valor)+(p.metodo?' ('+p.metodo+')':'')).join('\n');
+  const msg=`Hola ${pagosInfo.nombre}, te compartimos el *estado de cuenta* de tu cotización *${pagosInfo.numero}* con *${cfg.marca||cfg.empresa}*:\n\n💰 Valor total: ${fmt.format(d.total)}\n✅ Total abonado: ${fmt.format(d.abonado)}\n${d.saldo===0?'🎉 *Cuenta al día* ¡Gracias por tu pago!':'⏳ Saldo pendiente: *'+fmt.format(d.saldo)+'*'}\n\nDetalle de abonos:\n${detalle||'(sin abonos aún)'}\n\n¡Gracias por tu confianza! 📶`;
+  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
+};
+$('pgClose').onclick=()=>{$('pagosModal').classList.add('hidden');pagosCotId=null;};
+$('pagosModal').addEventListener('click',e=>{if(e.target.id==='pagosModal'){$('pagosModal').classList.add('hidden');pagosCotId=null;}});
+let registrandoPago=false;
+$('pgAdd').onclick=async()=>{
+  if(registrandoPago||!pagosCotId)return;
+  const v=Math.round(+$('pgValor').value||0);
+  if(v<=0){$('pgMsg').textContent='⚠ Ingresa el valor del abono';return;}
+  const saldoTxt=$('pgSaldo').textContent;
+  const saldoNum=+saldoTxt.replace(/[^0-9]/g,'')||0;
+  if(saldoNum>0&&v>saldoNum&&!confirm('El abono ('+fmt.format(v)+') supera el saldo pendiente ('+fmt.format(saldoNum)+'). ¿Registrar de todas formas?'))return;
+  registrandoPago=true;$('pgAdd').disabled=true;$('pgMsg').textContent='Registrando...';
+  try{
+    let comprobante=null,comprobanteNombre=null;
+    const f=$('pgComp').files[0];
+    if(f){
+      if(f.size>10*1024*1024){$('pgMsg').textContent='⚠ Comprobante máximo 10 MB';return;}
+      comprobanteNombre=f.name;
+      comprobante=await new Promise(res=>{const rd=new FileReader();rd.onload=()=>res(rd.result.split(',')[1]);rd.readAsDataURL(f);});
+    }
+    const r=await fetch('/api/pagos',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({cotId:pagosCotId,valor:v,metodo:$('pgMetodo').value,nota:$('pgNota').value.trim(),comprobante,comprobanteNombre,notificar:$('pgNotif').checked})});
+    const j=await r.json();
+    if(!r.ok){$('pgMsg').textContent='⚠ '+(j.error||'error');return;}
+    renderPagos(j);
+    $('pgValor').value='';$('pgNota').value='';$('pgComp').value='';
+    $('pgMsg').textContent='✓ Abono registrado'+(j.correoEnviado?' y cliente notificado por correo':(j.aviso?' (correo no enviado: '+j.aviso+')':''));
+    historial=await sGet('historial')||[];renderHist();
+  }finally{registrandoPago=false;$('pgAdd').disabled=false;}
+};
+let vistas={};
+async function cargarVistas(){try{vistas=(await sGet('vistas'))||{};}catch(e){vistas={};}}
+let editCot=null,pendingEditCot=null;
+function startEditCot(h){
+  pendingEditCot=JSON.parse(JSON.stringify(h));
+  document.querySelector('#tabs button[data-t="cotizar"]').click();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function aplicarEditCot(){
+  const h=pendingEditCot;pendingEditCot=null;if(!h)return;
+  editCot={id:h.id,numero:h.numero,autor:h.autor||''};
+  $('selCliente').value=h.cliente?.id||'';
+  if(!$('selCliente').value)alert('El cliente original ya no está en la lista. Selecciónalo o créalo de nuevo antes de guardar.');
+  $('asunto').value=h.asunto||'';$('cuerpo').value=h.cuerpo||cfg.cuerpo;$('ciudadFecha').value=h.ciudadFecha||(cfg.ciudad+', '+hoyTxt());
+  $('obs').value=h.obs||'';
+  lineas=JSON.parse(JSON.stringify(h.lineas||[]));renderLineas();
+  $('descuento').value=h.dPct||'';$('incIva').checked=h.ivaOn!==false;calc();
+  $('genPdf').textContent='💾 Actualizar '+h.numero+' (PDF nuevo)';
+  $('editNum').textContent=h.numero;$('editBadge').classList.remove('hidden');
+}
+function salirEdicion(){
+  editCot=null;$('editBadge').classList.add('hidden');
+  $('genPdf').textContent='📄 Generar cotización PDF';
+}
+$('cancelEdit').onclick=e=>{e.preventDefault();salirEdicion();lineas=[];renderLineas();$('asunto').value='';$('descuento').value='';calc();};
+let pendingOrdenCli=null;
+const numVal=x=>+((x||'').toString().replace(/[^0-9]/g,''))||0;
+function ordenCalc(){
+  const sub=+$('oSub').value||0,d=+$('oDescPct').value||0;
+  const desc=sub*d/100,base=sub-desc;
+  const on=$('oIvaChk').checked,pct=+cfg.iva||0,iva=on?base*pct/100:0,total=base+iva;
+  const mes=$('oTipo').value==='venta'?0:oRows.reduce((a,r)=>a+numVal(r.mes),0);
+  const mesIva=on?Math.round(mes*(1+pct/100)):mes;
+  $('oTMesLine').classList.toggle('hidden',!(mes>0));
+  $('oTMes').textContent=fmt.format(mes)+(on&&mes>0?(' (+IVA: '+fmt.format(mesIva)+'/mes)'):'/mes');
+  $('oTSub').textContent=fmt.format(sub);
+  $('oTDescLine').classList.toggle('hidden',!(d>0));$('oTBaseLine').classList.toggle('hidden',!(d>0));
+  $('oTDescPct').textContent=d;$('oTDesc').textContent='- '+fmt.format(desc);$('oTBase').textContent=fmt.format(base);
+  $('oTIvaLine').classList.toggle('hidden',!on);$('oTIvaPct3').textContent=pct;$('oTIva').textContent=fmt.format(iva);
+  $('oTTotal').textContent=fmt.format(total);
+  return{sub,dPct:d,desc,base,ivaOn:on,ivaPct:pct,iva,total,mes,mesIva};
+}
+$('oSub').addEventListener('input',ordenCalc);$('oDescPct').addEventListener('input',ordenCalc);$('oIvaChk').addEventListener('change',ordenCalc);
+$('oCalcRows').onclick=autoSub;
+function cotToOrden(h){
+  pendingOrdenCli={id:h.cliente.id||'',cedula:h.cliente.cedula||''};
+  $('oFecha').value=hoyTxt();
+  const esInternet=(h.lineas||[]).some(l=>/internet|mb\b|mbps|plan/i.test(l.item||''));
+  $('oTipo').value=esInternet?'internet':'venta';
+  oItems=(h.lineas||[]).map(l=>({item:l.item,desc:l.desc||'',cant:+l.cant||1,precio:+l.precio||0}));
+  oRows=(h.lineas||[]).map(l=>({
+    serv:l.item+((+l.cant||0)>1?' (x'+l.cant+')':''),
+    bw:'',ciudad:cfg.ciudad,dir:'',
+    inst:fmt.format((+l.cant||0)*(+l.precio||0)),
+    mes:''
+  }));
+  if(!oRows.length)oRows.push({serv:'',bw:'',ciudad:cfg.ciudad,dir:'',inst:'',mes:''});
+  if(!oItems.length)oItems.push({item:'',desc:'',cant:1,precio:0});
+  $('oCiudadGen').value=cfg.ciudad||'';$('oDirGen').value='';
+  renderORows();renderOVRows();toggleTipoOrden();
+  $('oSub').value=Math.round(h.sub||0)||'';$('oDescPct').value=h.dPct||'';$('oIvaChk').checked=!!h.ivaOn;ordenCalc();
+  document.querySelector('#tabs button[data-t="orden"]').click();window.scrollTo({top:0,behavior:'smooth'});
+}
+function collectOrden(){const c=clientes.find(x=>x.id===$('oCliente').value);if(!c){alert('Selecciona un cliente');return null;}
+  const tipo=$('oTipo').value;
+  if(tipo==='venta'){
+    if(!oItems.filter(l=>l.item.trim()).length){alert('Agrega al menos un ítem');return null;}
+  }else if(!oRows.length){alert('Agrega al menos un servicio');return null;}
+  return{cliente:c,fecha:$('oFecha').value.trim()||hoyTxt(),tipoDoc:$('oTipoDoc').value,numDoc:$('oNumDoc').value.trim(),
+    tipo,dirGen:$('oDirGen').value.trim(),ciudadGen:$('oCiudadGen').value.trim(),
+    items:JSON.parse(JSON.stringify(oItems.filter(l=>l.item.trim()))),
+    rows:JSON.parse(JSON.stringify(oRows)),cond:$('oCond').value,tot:ordenCalc()};}
+$('oPdf').onclick=()=>{const o=collectOrden();if(o)buildOrden(o,false);};
+let lastFirma=null;
+let creandoFirma=false;
+$('oCrearFirma').onclick=async()=>{
+  if(creandoFirma)return;
+  const o=collectOrden();if(!o)return;
+  creandoFirma=true;$('oCrearFirma').disabled=true;
+  try{
+  const r=await fetch('/api/firmas',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({orden:o,docName:'Orden de servicio - '+o.cliente.nombre,
+      empresa:{nombre:cfg.empresa,nit:cfg.nit,eslogan:cfg.eslogan,logo:cfg.logo}})});
+  const j=await r.json();
+  if(!r.ok){alert(j.error||'No se pudo crear el enlace');return;}
+  lastFirma={url:j.url&&j.url.startsWith('http')?j.url:location.origin+'/firmar.html?t='+j.token,cliente:o.cliente,docName:'Orden de servicio'};
+  $('fLink').textContent=lastFirma.url;$('fLinkA').href=lastFirma.url;
+  $('firmaLinkBox').classList.remove('hidden');
+  renderFirmas();
+  }finally{creandoFirma=false;$('oCrearFirma').disabled=false;}
+};
+$('fCopy').onclick=async()=>{if(!lastFirma)return;try{await navigator.clipboard.writeText(lastFirma.url);$('fMsg').textContent='✓ Enlace copiado';setTimeout(()=>$('fMsg').textContent='',2000);}catch(e){prompt('Copia el enlace:',lastFirma.url);}};
+$('fWa').onclick=()=>{if(!lastFirma)return;const tel=(lastFirma.cliente.tel||'').replace(/\D/g,'');const num=tel.startsWith('57')?tel:'57'+tel;
+  const msg=`Hola ${lastFirma.cliente.nombre}, te compartimos la *orden de servicio* para tu revision y firma electronica.\n\nFirma aqui: ${lastFirma.url}\n\nLa firma tiene validez legal (Ley 527 de 1999). Quedamos atentos!`;
+  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');};
+$('fMail').onclick=async()=>{if(!lastFirma)return;
+  const to=lastFirma.cliente.correo||prompt('Correo del cliente:');if(!to)return;
+  $('fMsg').textContent='Enviando correo...';
+  const body=`Cordial saludo ${lastFirma.cliente.nombre},\n\nLe compartimos la orden de servicio para su revision y firma electronica en el siguiente enlace:\n${lastFirma.url}\n\nLa firma electronica tiene plena validez conforme a la Ley 527 de 1999.\n\n${cfg.rep}\n${cfg.cargo} - ${cfg.empresa}\n${cfg.tel1} / ${cfg.tel2}`;
+  const r=await fetch('/api/correo',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({to,subject:'Orden de servicio para firma - '+cfg.marca,text:body})});
+  const j=await r.json();
+  $('fMsg').textContent=r.ok?('✓ Enviado a '+to):('⚠ '+(j.error||'no se pudo enviar'));
+};
+async function renderFirmas(){
+  try{
+    const r=await fetch('/api/firmas',{credentials:'same-origin'});if(!r.ok)return;
+    const j=await r.json();const b=$('firmasBody');b.innerHTML='';
+    j.firmas.slice().reverse().forEach(f=>{
+      const est=f.estado==='aprobada'?'🏁 Aprobada':(f.estado==='firmada'?'✍ Firmada — por aprobar':'⏳ Pendiente de firma');
+      const fecha=f.estado!=='pendiente'&&f.fechaFirma?new Date(f.fechaFirma).toLocaleString('es-CO'):new Date(f.creada).toLocaleDateString('es-CO');
+      let acc='';
+      if(f.estado==='pendiente')acc=`<button class="btn btn-ghost btn-sm" data-fcopy="${f.token}">Copiar enlace</button>`;
+      if(f.estado==='firmada')acc=`<button class="btn btn-pdf btn-sm" data-faprobar="${f.token}">✔ Aprobar y enviar docs</button> <button class="btn btn-ghost btn-sm" data-fpdf="${f.token}">PDF firmado</button>`;
+      if(f.estado==='aprobada'){
+        const fe=f.facturaEnvio;
+        const badge=fe?(fe.ok?' <span style="color:#0f9d58;font-size:10.5px;font-weight:700">🧾 enviada a facturación</span>':' <span style="color:#b00020;font-size:10.5px">🧾 falló envío</span>'):'';
+        acc=`<button class="btn btn-pdf btn-sm" data-ffact="${f.token}">🧾 Facturar</button> <button class="btn btn-ghost btn-sm" data-fpdf="${f.token}">PDF firmado</button>${badge}`;
+      }
+      b.insertAdjacentHTML('beforeend',`<tr><td>${esc(f.docName)}</td><td>${esc(f.cliente)}</td>
+        <td>${est}</td>
+        <td class="muted">${fecha}</td>
+        <td class="tright">${acc} <button class="btn btn-danger btn-sm" data-fdel="${f.token}">✕</button></td></tr>`);});
+    $('noFirmas').style.display=j.firmas.length?'none':'block';
+  }catch(e){}
+}
+document.body.addEventListener('click',async e=>{
+  const d=e.target.dataset;
+  if(d.fcopy){const url=location.origin+'/firmar.html?t='+d.fcopy;try{await navigator.clipboard.writeText(url);e.target.textContent='✓ Copiado';setTimeout(()=>e.target.textContent='Copiar enlace',1500);}catch(_){prompt('Copia el enlace:',url);}}
+  if(d.fdel){if(!confirmDel('esta solicitud/orden de firma'))return;await fetch('/api/firmas/'+d.fdel,{method:'DELETE',credentials:'same-origin'});renderFirmas();}
+  if(d.dup){docTipoPend=d.dup;$('docFile').click();}
+  if(d.crut){cliRutPend=d.crut;$('cRutRow').click();}
+  if(d.ddel){if(!confirmDel('el documento '+DOC_LABELS[d.ddel]))return;await fetch('/api/docs/'+d.ddel,{method:'DELETE',credentials:'same-origin'});loadDocs();}
+  if(d.faprobar){
+    if(!confirm('¿Aprobar esta orden? Se enviarán automáticamente los documentos de la empresa al correo del cliente.'))return;
+    e.target.textContent='Enviando...';e.target.disabled=true;
+    const r=await fetch('/api/firmas/'+d.faprobar+'/aprobar',{method:'POST',credentials:'same-origin'});
+    const j=await r.json();
+    alert(r.ok?(j.correoEnviado?('✓ Aprobada y documentos enviados a '+j.correo):('✓ Aprobada, pero el correo no salió: '+(j.aviso||''))):'⚠ '+(j.error||'error'));
+    renderFirmas();
+  }
+  if(d.fpdf){const r=await fetch('/api/firmas/'+d.fpdf,{credentials:'same-origin'});if(!r.ok)return;const j=await r.json();buildOrden(j.firma.orden,false,true,j.firma);}
+});
+
+function drawFirma(doc,x,y,titulo,role,nombre,docum,imgFirma){
+  const navy=PDF_NAVY,gris=PDF_GRIS;
+  if(imgFirma){try{const fp=doc.getImageProperties(imgFirma);const fw=40,fh=fw*fp.height/fp.width;doc.addImage(imgFirma,'PNG',x+4,y-fh+2,fw,fh);}catch(e){}}
+  doc.setDrawColor(...gris);doc.setLineWidth(0.3);doc.line(x,y,x+72,y);
+  doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(titulo,x,y+5);
+  doc.setFont('helvetica','normal');doc.setTextColor(...gris);doc.setFontSize(8.5);
+  doc.text('Nombre: '+(nombre||''),x,y+10.5);
+  doc.text('C.C./NIT: '+(docum||''),x,y+15.5);
+}
+function buildOrden(o,forDoc,descargar,reg){
+  const{jsPDF}=window.jspdf;const doc=new jsPDF('p','mm','a4');
+  const W=210,M=15,azul=PDF_AZUL,navy=PDF_NAVY,gris=PDF_GRIS,claro=PDF_CLARO;const top=54;
+  drawChrome(doc);let y=top;
+  doc.setFillColor(...azul);doc.roundedRect(M,y,W-2*M,10,1.5,1.5,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(12);
+  doc.text(o.tipo==='venta'?'ORDEN DE SERVICIO — VENTA E INSTALACIÓN':'ORDEN DE SERVICIO',W/2,y+6.6,{align:'center'});y+=16;
+  doc.setTextColor(...navy);doc.setFont('helvetica','normal');doc.setFontSize(9.5);
+  doc.text('Fecha de elaboración: '+o.fecha,M,y);y+=7;
+  doc.setFillColor(...claro);doc.roundedRect(M,y,W-2*M,27,1.5,1.5,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('DATOS DEL CLIENTE',M+3,y+6);
+  doc.setFont('helvetica','normal');doc.setTextColor(...gris);doc.setFontSize(9);
+  doc.text('Razón social: '+o.cliente.nombre,M+3,y+12);
+  doc.text(o.tipoDoc+': '+(o.numDoc||o.cliente.cedula||'—'),M+3,y+17.5);
+  doc.text('Correo: '+(o.cliente.correo||'—'),M+3,y+23);
+  doc.text('Tel: '+(o.cliente.tel||'—'),W/2+12,y+17.5);
+  if(o.tipo==='venta'&&(o.dirGen||o.ciudadGen))doc.text(('Instalación: '+(o.dirGen||'')+(o.ciudadGen?' — '+o.ciudadGen:'')).slice(0,60),W/2+12,y+23);
+  y+=33;
+  const esVenta=o.tipo==='venta';
+  const body=esVenta
+    ?(o.items||[]).map(l=>[l.item,l.desc||'',String(l.cant),fmt.format(l.precio),fmt.format((+l.cant||0)*(+l.precio||0))])
+    :o.rows.map(r=>[r.serv,r.bw,r.ciudad,r.dir,r.inst,r.mes]);
+  doc.autoTable({startY:y,head:[esVenta?['Ítem','Descripción','Cant.','Vlr unitario','Vlr total']:['Servicio','Ancho banda','Ciudad','Dirección instalación','Cargo instalación','Recurrente mensual']],body,theme:'grid',margin:{left:M,right:M,top:top,bottom:20},
+    headStyles:{fillColor:azul,textColor:255,fontSize:8,halign:'center'},bodyStyles:{fontSize:8,textColor:[40,50,60],cellPadding:2},
+    columnStyles:{1:{cellWidth:20,halign:'center'},2:{cellWidth:20},4:{halign:'right'},5:{halign:'right'}},didDrawPage:()=>drawChrome(doc)});
+  y=doc.lastAutoTable.finalY+8;
+  const need=h=>{if(y+h>272){doc.addPage();drawChrome(doc);y=top;}};
+  const t=o.tot;
+  if(t&&(t.sub>0||t.mes>0)){
+    need(42);
+    const boxX=W-M-72,boxW=72;
+    const tl=(lbl,val,bold,fill)=>{if(fill){doc.setFillColor(...azul);doc.rect(boxX,y-4.7,boxW,7.6,'F');doc.setTextColor(255,255,255);}else doc.setTextColor(...(bold?navy:gris));
+      doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(bold?11:9.5);doc.text(lbl,boxX+2,y);doc.text(val,boxX+boxW-2,y,{align:'right'});y+=fill?8:6;};
+    const yIni=y;
+    if(t.sub>0){
+      tl('Subtotal',fmt.format(t.sub),false);
+      if(t.dPct>0){tl('Descuento ('+t.dPct+'%)','- '+fmt.format(t.desc),false);tl('Base gravable',fmt.format(t.base),false);}
+      if(t.ivaOn)tl('IVA ('+t.ivaPct+'%)',fmt.format(t.iva),false);
+      y+=1;tl('TOTAL A PAGAR',fmt.format(t.total),true,true);
+      doc.setTextColor(...navy);doc.setFont('helvetica','italic');doc.setFontSize(8.5);
+      doc.text('Son: '+numeroALetras(t.total)+' PESOS M/CTE.',M,yIni+4,{maxWidth:W/2});
+    }
+    if(t.mes>0){
+      doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(9.5);
+      doc.text('Recurrente mensual: '+fmt.format(t.mes)+(t.ivaOn?('  (con IVA: '+fmt.format(t.mesIva)+'/mes)'):'/mes'),boxX+boxW,y+2,{align:'right'});
+      y+=7;
+    }
+    y+=4;
+  }
+  need(30);doc.setFont('helvetica','bold');doc.setTextColor(...navy);doc.setFontSize(9);doc.text('CONDICIONES COMERCIALES',M,y);y+=5;
+  doc.setFont('helvetica','normal');doc.setTextColor(...gris);doc.setFontSize(8.6);
+  doc.splitTextToSize(o.cond,W-2*M).forEach(l=>{need(6);doc.text(l,M,y);y+=4.6;});
+  y+=12;need(34);
+  const colW=(W-2*M-12)/2;const fy=Math.max(y,240);
+  drawFirma(doc,M,fy,'CLIENTE',null,reg?reg.firmanteNombre:o.cliente.nombre,reg?reg.firmanteDoc:(o.numDoc||o.cliente.cedula),reg?reg.firmaImg:null);
+  drawFirma(doc,M+colW+12,fy,'PROVEEDOR · '+cfg.marca,null,cfg.rep,cfg.nit,cfg.firma);
+  if(reg){
+    let ey=fy+24;
+    doc.setFontSize(7.2);doc.setTextColor(...gris);doc.setFont('helvetica','normal');
+    doc.text('FIRMADO ELECTRÓNICAMENTE (Ley 527/1999, Dto. 2364/2012) — Evidencia:',M,ey);ey+=3.6;
+    doc.text('Fecha: '+new Date(reg.fechaFirma).toLocaleString('es-CO')+'   IP: '+(reg.ipFirma||'')+'   Token: '+reg.token,M,ey);ey+=3.6;
+    if(reg.correoVerificado){doc.text('Identidad verificada por código de un solo uso enviado al correo: '+reg.correoVerificado,M,ey);ey+=3.6;}
+    doc.text('Verificación SHA-256: '+reg.hash,M,ey,{maxWidth:W-2*M});
+  }
+  if(descargar!==false)doc.save('Orden_Servicio_'+o.cliente.nombre.replace(/\s+/g,'_')+(reg?'_FIRMADA':'')+'.pdf');
+  return doc;
+}
+
+/* ---------- INIT ---------- */
+let currentUser={username:null,role:null};
+async function afterAuth(){
+  try{const me=await fetch('/api/auth/me',{credentials:'same-origin'}).then(r=>r.json());currentUser={username:me.username,role:me.role};}catch(e){}
+  $('whoami').textContent=currentUser.username?('👤 '+currentUser.username):'';
+  if(currentUser.role!=='admin'){$('tabAjustes').style.display='none';}
+  openApp();
+  await loadAll();
+  applyCfg();fillCfg();renderCat();renderCli();renderHist();renderLineas();
+  renderOrdenSelect();renderORows();$('oFecha').value=hoyTxt();$('oCond').value=DEF_COND;renderFirmas();
+  $('cuerpo').value=cfg.cuerpo;$('ciudadFecha').value=cfg.ciudad+', '+hoyTxt();
+  if(currentUser.role==='admin'){loadUsers();loadSmtp();loadDocs();loadFact();}
+  loadCombos();
+}
+let docsUrl='';let docTipoPend=null;
+const DOC_LABELS={rut:'RUT',existencia:'Certificado de existencia',camara:'Cámara de comercio',rup:'RUP',cuenta:'Certificado de cuenta bancaria'};
+async function loadFact(){
+  try{const r=await fetch('/api/kv/factcfg',{credentials:'same-origin'});if(!r.ok)return;
+    const v=(await r.json()).value||{};
+    $('factUrl').value=v.url||'';$('factToken').value=v.token||'';$('factActivo').checked=!!v.activo;
+  }catch(e){}}
+$('factSave').onclick=async()=>{
+  const v={url:$('factUrl').value.trim(),token:$('factToken').value.trim(),activo:$('factActivo').checked};
+  const r=await fetch('/api/kv/factcfg',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:v})});
+  $('factMsg').textContent=r.ok?'✓ Guardado':'⚠ error';setTimeout(()=>$('factMsg').textContent='',2500);};
+$('factTest').onclick=async()=>{
+  $('factMsg').textContent='Probando...';
+  const r=await fetch('/api/facturacion/probar',{method:'POST',credentials:'same-origin'});
+  const j=await r.json();
+  $('factMsg').textContent=j.ok?('✓ Conectado (HTTP '+j.status+')'):'⚠ '+(j.error||('HTTP '+j.status));};
+async function loadDocs(){
+  try{const r=await fetch('/api/docs',{credentials:'same-origin'});if(!r.ok)return;
+    const j=await r.json();docsUrl=j.url&&j.url.startsWith('http')?j.url:location.origin+j.url.slice(j.url.indexOf('/docs.html'));
+    $('docsVer').href=docsUrl;
+    const b=$('docsBody');b.innerHTML='';
+    j.docs.forEach(d=>{b.insertAdjacentHTML('beforeend',`<tr><td><b>${esc(d.label)}</b></td>
+      <td>${d.cargado?'✅ Cargado':'—'}</td>
+      <td class="muted">${esc(d.nombre||'')}${d.fecha?(' · '+new Date(d.fecha).toLocaleDateString('es-CO')):''}</td>
+      <td class="tright"><button class="btn btn-ghost btn-sm" data-dup="${d.tipo}">${d.cargado?'Reemplazar':'Subir PDF'}</button>${d.cargado?` <button class="btn btn-danger btn-sm" data-ddel="${d.tipo}">✕</button>`:''}</td></tr>`);});
+  }catch(e){}
+}
+let cliRutPend=null;
+$('cRutRow').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f||!cliRutPend)return;
+  const file=await subirAdjunto(f);
+  if(file){const c=clientes.find(x=>x.id===cliRutPend);if(c){c.rutFile=file;c.rutNombre=f.name;await sSet('clientes',clientes);renderCli();}}
+  else alert('No se pudo subir el archivo');
+  cliRutPend=null;e.target.value='';
+});
+$('docFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f||!docTipoPend)return;
+  if(f.size>10*1024*1024){alert('Máximo 10 MB');return;}
+  $('docsMsg').textContent='Subiendo '+DOC_LABELS[docTipoPend]+'...';
+  const b64=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.readAsDataURL(f);});
+  const r=await fetch('/api/docs/'+docTipoPend,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre:f.name,data:b64})});
+  $('docsMsg').textContent=r.ok?'✓ '+DOC_LABELS[docTipoPend]+' cargado':'⚠ error al subir';
+  docTipoPend=null;e.target.value='';loadDocs();
+});
+$('docsCopy').onclick=async()=>{if(!docsUrl)return;try{await navigator.clipboard.writeText(docsUrl);$('docsMsg').textContent='✓ Enlace copiado';setTimeout(()=>$('docsMsg').textContent='',2000);}catch(_){prompt('Copia el enlace:',docsUrl);}};
+$('docsWa').onclick=()=>{if(!docsUrl)return;
+  const msg=`Hola, te compartimos los documentos legales de *${cfg.empresa}* (RUT, cámara de comercio, certificado bancario) para tus trámites:\n\n${docsUrl}`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');};
+async function loadSmtp(){
+  try{const r=await fetch('/api/kv/smtp',{credentials:'same-origin'});if(!r.ok)return;
+    const v=(await r.json()).value||{};
+    $('smHost').value=v.host||'';$('smPort').value=v.port||'';$('smUser').value=v.user||'';$('smFrom').value=v.from||'';
+    $('smPass').value='';$('smPass').placeholder=v.pass?'(guardada — escribe solo para cambiarla)':'••••••••';
+  }catch(e){}
+}
+$('saveSmtp').onclick=async()=>{
+  const r0=await fetch('/api/kv/smtp',{credentials:'same-origin'});const prev=r0.ok?((await r0.json()).value||{}):{};
+  const v={host:$('smHost').value.trim(),port:+$('smPort').value||465,user:$('smUser').value.trim(),
+    from:$('smFrom').value.trim()||$('smUser').value.trim(),
+    pass:$('smPass').value?$('smPass').value:(prev.pass||'')};
+  const r=await fetch('/api/kv/smtp',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:v})});
+  $('smtpMsg').textContent=r.ok?'✓ Guardado':'⚠ error al guardar';
+  if(r.ok)loadSmtp();
+};
+$('testSmtp').onclick=async()=>{
+  const to=prompt('¿A qué correo envío la prueba?',cfg.mail||'');if(!to)return;
+  $('smtpMsg').textContent='Enviando prueba...';
+  const r=await fetch('/api/correo/test',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({to})});
+  const j=await r.json();
+  $('smtpMsg').textContent=r.ok?('✓ Prueba enviada a '+to):('⚠ '+(j.error||'fallo'));
+};
+async function loadUsers(){
+  try{const r=await fetch('/api/users',{credentials:'same-origin'});if(!r.ok)return;const j=await r.json();
+    const b=$('usersBody');b.innerHTML='';
+    j.users.forEach(u=>{b.insertAdjacentHTML('beforeend',`<tr><td><b>${esc(u.username)}</b>${u.username===currentUser.username?' <span class="muted">(tú)</span>':''}</td><td>${u.role==='admin'?'Administrador':'Vendedor'}</td><td>${u.active?'✅ Activo':'⛔ Inactivo'}</td><td class="tright"><button class="btn btn-ghost btn-sm" data-ureset="${esc(u.username)}">Resetear clave</button> ${u.username!==currentUser.username?`<button class="btn ${u.active?'btn-danger':'btn-ghost'} btn-sm" data-utoggle="${esc(u.username)}">${u.active?'Desactivar':'Activar'}</button>`:''}</td></tr>`);});
+  }catch(e){console.error(e);}
+}
+$('addUser').onclick=async()=>{
+  const username=$('uUser').value.trim(),password=$('uPass').value,role=$('uRol').value;
+  if(!username||password.length<4){$('usersMsg').textContent='⚠ Usuario y contraseña (mín 4) requeridos';return;}
+  const r=await fetch('/api/users',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,role})});
+  const j=await r.json();
+  $('usersMsg').textContent=r.ok?('✓ Usuario '+username+' creado'):('⚠ '+(j.error||'error'));
+  if(r.ok){$('uUser').value='';$('uPass').value='';loadUsers();}
+};
+document.body.addEventListener('click',async e=>{
+  const ur=e.target.dataset.ureset,ut=e.target.dataset.utoggle;
+  if(ur){const p=prompt('Nueva contraseña para '+ur+' (mín 4):');if(!p||p.length<4)return;
+    const r=await fetch('/api/users/'+encodeURIComponent(ur)+'/reset',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})});
+    $('usersMsg').textContent=r.ok?('✓ Clave de '+ur+' actualizada'):'⚠ error';}
+  if(ut){const r=await fetch('/api/users/'+encodeURIComponent(ut)+'/toggle',{method:'POST',credentials:'same-origin'});
+    if(r.ok)loadUsers();}
+});
+$('logoutTop').onclick=async()=>{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'});location.reload();};
+(async function(){ await initGate(); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+REGISTRO DE CAMBIOS - Cotizador Abierto
+==========================================
+
+v18 (2026-10-10)
+- Cotizacion rapida con COMBOS: nueva tarjeta en Cotizar con
+  botones de paquetes preconfigurados — un clic agrega todas las
+  lineas del kit a la cotizacion.
+- Vienen sembrados "Kit 4 camaras hogar" (4x camara $99.900 +
+  DVR + disco 1TB + cajas + cable + mano de obra) y
+  "Kit 8 camaras hogar" (mismo esquema x8).
+- Editor de combos (⚙ Administrar): crear/editar/eliminar combos,
+  lineas con buscador del catalogo. Precio 0 en una linea = toma
+  el precio VIGENTE del catalogo al cotizar (se actualiza solo
+  con el importador semanal); precio > 0 = fijo (ej: camara 99.900).
+- El boton de cada combo muestra el total estimado en vivo.
+
+v17 (2026-10-10)
+- Felicitaciones, lista "lo que contrataste" con detalle de valores:
+  * Ordenes de internet: un renglon por concepto —
+    "SERVICIO — Instalacion: $X" y "SERVICIO — Mensualidad: $Y/mes"
+    (si una fila trae ambos, salen dos renglones).
+  * Ordenes de venta: "ITEM (xN) — $ valor total" por item.
+
+v16 (2026-10-10)
+- Pantalla de Felicitaciones: si el ITEM es solo un numero
+  (ej: "1", "2" usados como numeracion manual), la lista de
+  "lo que contrataste" muestra la DESCRIPCION en su lugar.
+  Aplica tanto a ordenes de venta (items) como de internet (rows).
+
+v15 (2026-09-14)
+- Pantalla de ¡Felicitaciones! al terminar la firma electronica:
+  check animado, saludo por nombre, lista de lo contratado,
+  proximos pasos, marca/eslogan/logo y contacto de la empresa
+  (telefonos y web tomados en vivo desde Ajustes).
+- El GET publico de firma ahora incluye datos de contacto frescos.
+
+v14 (2026-09-14)
+- Boton "ACEPTO ESTA PROPUESTA" en el PDF de la cotizacion
+  (enlace clicable + URL en texto).
+- Pagina /aceptar.html estilo net2phone: animacion "generando tu
+  orden de servicio" -> check verde -> boton VAMOS -> firma OTP.
+- POST /api/aceptar/:token publico e idempotente: convierte la
+  cotizacion en orden (detecta venta/internet), crea el enlace de
+  firma, marca la cotizacion como Aceptada y avisa por correo
+  "Propuesta ACEPTADA" a la empresa.
+- Las cotizaciones creadas por la API n8n tambien traen el boton
+  (PDF de servidor con pdfkit).
+
+v13 - Facturacion electronica: webhook al CRM (Alegra via n8n),
+      disparo automatico al aprobar ordenes con IVA, boton manual
+      "Facturar", tarjeta de configuracion en Ajustes (solo admin).
+v12 - Dos tipos de orden: "Venta e instalacion de equipos"
+      (Item/Desc/Cant/VlrUnit/VlrTotal + direccion general) y
+      "Servicio de internet" (esquema clasico). Deteccion
+      automatica al convertir cotizaciones. PDF, pagina de firma
+      y API actualizados.
+v11 - Dashboard mensual, cartera con total por cobrar, estados de
+      cotizacion (embudo), contador de vistas del PDF, /salud.
+v10 - Correo HTML de abonos con tarjetas de Total/Abonado/Saldo.
+v9  - Modulo de pagos/abonos con comprobante y notificacion.
+v8  - API de automatizacion n8n + PDF generado en servidor.
+v1-v7 - Sistema base: cotizaciones, ordenes, firma electronica
+      propia con OTP, aprobacion + documentos corporativos,
+      multiusuario con roles, seguridad.

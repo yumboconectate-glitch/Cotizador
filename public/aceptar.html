@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aceptación de propuesta</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#007DB7;--navy:#14395c;--gris:#64748b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:'Inter',sans-serif;color:#1f2d3a;
+  background:linear-gradient(160deg,#0a4a72,#007DB7 55%,#3AA5D1);
+  display:flex;align-items:center;justify-content:center;padding:18px;position:relative;overflow:hidden}
+.deco{position:absolute;inset:0;opacity:.14;background-image:linear-gradient(30deg,transparent 48%,#fff 49%,#fff 51%,transparent 52%),linear-gradient(-30deg,transparent 48%,#fff 49%,#fff 51%,transparent 52%);background-size:120px 120px}
+.card{position:relative;background:#fff;border-radius:18px;max-width:520px;width:100%;padding:34px 30px;box-shadow:0 18px 60px rgba(0,0,0,.28);text-align:center}
+.logo{max-height:64px;margin-bottom:6px}
+h1{font-family:'Poppins';color:var(--navy);font-size:20px;margin:10px 0 8px}
+p{color:var(--gris);font-size:14px;line-height:1.6;margin:6px 0}
+.spin{width:52px;height:52px;border-radius:50%;border:5px solid #e3edf4;border-top-color:var(--azul);margin:14px auto 6px;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ok{width:64px;height:64px;border-radius:50%;background:#e8f7ef;color:#0f9d58;font-size:34px;line-height:64px;margin:6px auto 10px;animation:pop .4s ease}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.aviso{background:#fff7e6;border:1px solid #ffe1a8;border-radius:12px;padding:12px 14px;font-size:13px;color:#7a5c00;text-align:left;margin:14px 0}
+.btn{display:inline-block;background:var(--azul);color:#fff;text-decoration:none;font-family:'Poppins';font-weight:700;font-size:15px;letter-spacing:.5px;padding:13px 44px;border-radius:99px;margin-top:10px;box-shadow:0 6px 18px rgba(0,125,183,.35);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.err{color:#b00020;font-weight:600}
+.foot{position:relative;margin-top:14px;font-size:11.5px;color:#cfe6f5;text-align:center}
+</style>
+</head>
+<body>
+<div class="deco"></div>
+<div>
+<div class="card" id="app">
+  <div id="pLoad">
+    <img class="logo" id="logo1" src="" alt="" style="display:none">
+    <div class="spin"></div>
+    <h1>Por favor espera mientras<br>generamos tu orden de servicio</h1>
+    <p>Estamos preparando tu documento para la firma electrónica.<br>Este paso puede tardar unos segundos.</p>
+  </div>
+  <div id="pListo" style="display:none">
+    <img class="logo" id="logo2" src="" alt="" style="display:none">
+    <div class="ok">✓</div>
+    <h1>¡Tu orden está lista para ser firmada!</h1>
+    <p id="pInfo">Gracias por aceptar nuestra propuesta.</p>
+    <div class="aviso">✍ La firma debe realizarla el <b>representante legal o la persona autorizada</b>. Te pediremos un <b>código de verificación</b> que llegará a tu correo electrónico.</div>
+    <a class="btn" id="btnVamos" href="#">VAMOS →</a>
+  </div>
+  <div id="pError" style="display:none">
+    <h1 class="err">Enlace no válido o vencido</h1>
+    <p>Esta propuesta no está disponible. Por favor solicita un enlace actualizado a la empresa.</p>
+  </div>
+</div>
+<p class="foot">Aceptación y firma electrónica en línea — Ley 527 de 1999</p>
+</div>
+<script>
+const tk=new URLSearchParams(location.search).get('t');
+(async()=>{
+  if(!tk){document.getElementById('pLoad').style.display='none';document.getElementById('pError').style.display='block';return;}
+  const t0=Date.now();
+  let j=null,ok=false;
+  try{
+    const r=await fetch('/api/aceptar/'+encodeURIComponent(tk),{method:'POST'});
+    j=await r.json();ok=r.ok&&j.firmaUrl;
+  }catch(e){}
+  // efecto: mínimo 2.6s de "generando" para la experiencia
+  const espera=Math.max(0,2600-(Date.now()-t0));
+  setTimeout(()=>{
+    document.getElementById('pLoad').style.display='none';
+    if(!ok){document.getElementById('pError').style.display='block';return;}
+    if(j.empresa&&j.empresa.logo){const l=document.getElementById('logo2');l.src=j.empresa.logo;l.style.display='inline-block';}
+    document.getElementById('pInfo').textContent='Gracias por aceptar la propuesta '+(j.numero||'')+(j.cliente?(' — '+j.cliente):'')+'. Total: '+(j.total||'');
+    document.getElementById('btnVamos').href=j.firmaUrl;
+    document.getElementById('pListo').style.display='block';
+  },espera);
+})();
+</script>
+</body>
+</html>

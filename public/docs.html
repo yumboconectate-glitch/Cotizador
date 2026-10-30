@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentos de la empresa</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#007DB7;--navy:#14395c;--gris:#64748b;--linea:#e3ebf2;--suave:#f5f9fc}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#0a4a72,#007DB7 55%,#3AA5D1);font-family:'Inter',sans-serif;color:#1f2d3a;min-height:100vh;padding:18px}
+.wrap{max-width:620px;margin:0 auto}
+.card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 10px 40px rgba(0,0,0,.18)}
+h1{font-family:'Poppins';color:var(--navy);font-size:19px;margin:8px 0 2px;text-align:center}
+.muted{color:var(--gris);font-size:12.5px;text-align:center}
+.logo{max-height:70px;display:block;margin:0 auto}
+.doc{display:flex;align-items:center;gap:14px;border:1px solid var(--linea);border-radius:12px;padding:14px;margin-top:12px}
+.doc .ico{font-size:26px}
+.doc .info{flex:1}
+.doc .info b{color:var(--navy);display:block}
+.doc .info span{font-size:12px;color:var(--gris)}
+.doc a{background:var(--azul);color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:9px 14px;border-radius:9px;white-space:nowrap}
+.doc a:hover{background:#0069a0}
+.foot{margin-top:16px;text-align:center;font-size:11.5px;color:var(--gris)}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card" id="app"><h1>Cargando documentos…</h1></div>
+<p class="foot" style="color:#cfe6f5">Enlace seguro de documentos empresariales</p></div>
+<script>
+const esc=t=>(t||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tk=new URLSearchParams(location.search).get('t');
+(async()=>{
+  const app=document.getElementById('app');
+  if(!tk){app.innerHTML='<h1>Enlace no válido</h1>';return;}
+  const r=await fetch('/api/docs-publicos/'+encodeURIComponent(tk));
+  if(!r.ok){app.innerHTML='<h1>Enlace no válido o vencido</h1><p class="muted">Solicita el enlace actualizado a la empresa.</p>';return;}
+  const d=await r.json();const e=d.empresa||{};
+  const docs=(d.docs||[]).map(x=>`<div class="doc"><div class="ico">📄</div>
+    <div class="info"><b>${esc(x.label)}</b><span>Actualizado: ${x.fecha?new Date(x.fecha).toLocaleDateString('es-CO'):''}</span></div>
+    <a href="/api/docs-publicos/${encodeURIComponent(tk)}/${x.tipo}" target="_blank">Ver / Descargar</a></div>`).join('');
+  app.innerHTML=`${e.logo?`<img class="logo" src="${e.logo}">`:''}
+    <h1>${esc(e.nombre)}</h1>
+    <p class="muted">${e.nit?('NIT '+esc(e.nit)+' · '):''}${esc(e.eslogan||'')}</p>
+    <p class="muted" style="margin-top:14px">Documentos legales y tributarios de la empresa, disponibles para tus trámites:</p>
+    ${docs||'<p class="muted">Aún no hay documentos publicados.</p>'}`;
+})();
+</script>
+</body>
+</html>

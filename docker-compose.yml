@@ -1,0 +1,23 @@
+services:
+  cotizador:
+    build: .
+    image: cotizador-abierto:latest
+    container_name: cotizador
+    restart: unless-stopped
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 3000
+      DATA_DIR: /data
+      PUBLIC_URL: ${PUBLIC_URL:-https://cotiza.tudominio.com}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      N8N_API_KEY: ${N8N_API_KEY:-}
+    volumes:
+      - cotz-data:/data
+    ports:
+      - "8087:3000"
+volumes:
+  cotz-data:

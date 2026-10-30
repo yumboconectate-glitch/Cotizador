@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firma electrónica</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#007DB7;--navy:#14395c;--gris:#64748b;--linea:#e3ebf2;--suave:#f5f9fc;--ok:#0f9d58;--danger:#e5484d}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#0a4a72,#007DB7 55%,#3AA5D1);font-family:'Inter',sans-serif;font-size:14.5px;color:#1f2d3a;min-height:100vh;padding:18px}
+.wrap{max-width:760px;margin:0 auto}
+.card{background:#fff;border-radius:16px;padding:22px;margin-bottom:14px;box-shadow:0 10px 40px rgba(0,0,0,.18)}
+h1,h2{font-family:'Poppins',sans-serif;color:var(--navy)}
+h1{font-size:19px;margin:0 0 4px}
+h2{font-size:15px;margin:0 0 10px}
+.logo{max-height:64px;display:block;margin:0 auto 8px}
+.center{text-align:center}
+.muted{color:var(--gris);font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--linea)}
+th{background:var(--azul);color:#fff;font-size:11px;text-transform:uppercase}
+.tright{text-align:right}
+.tot{background:var(--suave);border-radius:10px;padding:12px 14px;margin-top:10px}
+.totline{display:flex;justify-content:space-between;padding:3px 0}
+.totline.big{font-weight:700;font-size:17px;color:var(--navy);border-top:2px solid var(--azul);padding-top:8px;margin-top:5px}
+label{display:block;font-weight:600;color:var(--navy);font-size:12.5px;margin:0 0 5px}
+input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--linea);border-radius:9px;font-family:inherit;font-size:14.5px}
+input:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0,125,183,.12)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.g2{grid-template-columns:1fr}}
+#pad{width:100%;height:180px;border:2px dashed var(--azul);border-radius:12px;background:#fff;touch-action:none;display:block}
+.padwrap{background:var(--suave);border-radius:12px;padding:12px}
+.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:600;font-size:15px;cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--ok);color:#fff;width:100%}
+.btn-ghost{background:#fff;color:var(--navy);border:1px solid var(--linea)}
+.legal{display:flex;gap:10px;align-items:flex-start;background:var(--suave);border:1px solid var(--linea);border-radius:10px;padding:12px;font-size:12.5px;color:var(--gris)}
+.legal input{margin-top:3px}
+#msg{min-height:20px;font-size:13px;font-weight:600;margin-top:8px;text-align:center}
+.ok{color:var(--ok)}.err{color:var(--danger)}
+.felic .check{width:74px;height:74px;border-radius:50%;background:#e8f7ef;color:var(--ok);font-size:40px;line-height:74px;margin:4px auto 12px;animation:pop .45s ease}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.felic h1{font-size:24px;margin:4px 0 14px}
+.felic .caja{background:var(--suave);border-radius:12px;padding:16px 18px;text-align:left;font-size:14px;line-height:1.7;color:#2a3a4a;margin:10px 0}
+.felic .caja b{color:var(--navy)}
+.felic .serv{margin:6px 0 0;padding-left:18px}
+.felic .serv li{margin:2px 0}
+.felic .contacto{margin-top:16px;font-size:12.5px;color:var(--gris);line-height:1.8}
+.felic .contacto a{color:var(--azul);font-weight:600;text-decoration:none}
+.felic .logoF{max-height:56px;margin-top:12px}
+.done{font-size:44px}
+pre.cond{white-space:pre-wrap;font-family:inherit;font-size:12.5px;color:var(--gris);background:var(--suave);border-radius:10px;padding:12px;margin:0}
+.evidencia{font-size:11px;color:var(--gris);word-break:break-all}
+.hero{background:linear-gradient(135deg,#0a3a5c,#0d5b8a);border-radius:16px;padding:20px;color:#fff;margin-bottom:14px;box-shadow:0 10px 40px rgba(0,0,0,.18)}
+.hero h1{color:#fff;margin:0 0 2px}
+.hero .sub{color:#bcd9ec;font-size:12px;margin-bottom:14px}
+.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px}
+.chip .lbl{font-size:10px;letter-spacing:.6px;color:#bcd9ec;text-transform:uppercase}
+.chip .val{font-weight:700;font-size:14.5px;margin-top:3px}
+.step{display:flex;align-items:center;gap:9px;font-family:'Poppins';font-weight:600;color:var(--navy);font-size:14.5px;margin:16px 0 8px}
+.step .n{background:var(--azul);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+.otp{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#codigo{width:180px;font-size:22px;letter-spacing:10px;text-align:center;padding:9px;border:1px solid var(--linea);border-radius:10px;font-weight:700;color:var(--navy)}
+#codigo:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0,125,183,.12)}
+.btn-otp{background:var(--suave);color:var(--navy);border:1px solid var(--linea)}
+.btn-otp:disabled{opacity:.55;cursor:default}
+#otpMsg{font-size:12.5px;font-weight:600;min-height:16px;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="card center"><h1>Cargando documento…</h1></div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const fmt=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',minimumFractionDigits:0,maximumFractionDigits:0});
+const esc=t=>(t||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const token=new URLSearchParams(location.search).get('t');
+let hayTrazo=false;
+
+async function init(){
+  if(!token){$('#app').innerHTML='<div class="card center"><h1>Enlace no válido</h1></div>';return;}
+  const r=await fetch('/api/firma-publica/'+encodeURIComponent(token));
+  if(!r.ok){$('#app').innerHTML='<div class="card center"><h1>Enlace de firma no válido o eliminado</h1><p class="muted">Verifica el enlace con quien te lo envió.</p></div>';return;}
+  const d=await r.json();
+  window.datosFirma=d;
+  if(d.estado==='firmada'){
+    $('#app').innerHTML=`<div class="card center"><div class="done">✅</div><h1>Documento ya firmado</h1>
+      <p>Firmado por <b>${esc(d.firmante?.nombre)}</b> (${esc(d.firmante?.documento)})<br>el ${new Date(d.fechaFirma).toLocaleString('es-CO')}</p>
+      <p class="muted">Verificación SHA-256:<br><span class="evidencia">${d.hash}</span></p></div>`;
+    return;
+  }
+  const o=d.orden||{},emp=d.empresa||{};
+  const esVenta=o.tipo==='venta';
+  const fmtV=n=>'$ '+Math.round(+n||0).toLocaleString('es-CO');
+  const rows=esVenta
+    ?(o.items||[]).map(l=>`<tr><td><b>${esc(l.item)}</b>${l.desc?'<br><span style="color:#64748b;font-size:11px">'+esc(l.desc)+'</span>':''}</td><td class="tright">${l.cant}</td><td class="tright">${fmtV(l.precio)}</td><td class="tright">${fmtV((+l.cant||0)*(+l.precio||0))}</td></tr>`).join('')
+    :(o.rows||[]).map(r=>`<tr><td>${esc(r.serv)}</td><td>${esc(r.bw)}</td><td>${esc(r.dir)}</td><td class="tright">${esc(r.inst)}</td><td class="tright">${esc(r.mes)}</td></tr>`).join('');
+  const t=o.tot||{};
+  const totHtml=(t.sub>0)?`<div class="tot">
+      <div class="totline"><span>Subtotal</span><span>${fmt.format(t.sub)}</span></div>
+      ${t.dPct>0?`<div class="totline"><span>Descuento (${t.dPct}%)</span><span>- ${fmt.format(t.desc)}</span></div><div class="totline"><span>Base gravable</span><span>${fmt.format(t.base)}</span></div>`:''}
+      ${t.ivaOn?`<div class="totline"><span>IVA (${t.ivaPct}%)</span><span>${fmt.format(t.iva)}</span></div>`:''}
+      <div class="totline big"><span>TOTAL A PAGAR</span><span>${fmt.format(t.total)}</span></div></div>`:'';
+  $('#app').innerHTML=`
+  <div class="card center">
+    ${emp.logo?`<img class="logo" src="${emp.logo}">`:''}
+    <p class="muted" style="margin:0">${esc(emp.nombre||'')}${emp.nit?(' · NIT '+esc(emp.nit)):''}</p>
+  </div>
+  <div class="hero">
+    <h1>${esc(d.docName)}</h1>
+    <div class="sub">Creado el ${new Date(d.creada).toLocaleDateString('es-CO')} · Documento verificable</div>
+    <div class="chips">
+      <div class="chip"><div class="lbl">Cliente</div><div class="val">${esc(o.cliente?.nombre||'')}</div></div>
+      <div class="chip"><div class="lbl">${esc(o.tipoDoc||'Documento')}</div><div class="val">${esc(o.numDoc||o.cliente?.cedula||'—')}</div></div>
+      ${t.sub>0?`<div class="chip"><div class="lbl">Total a pagar</div><div class="val">${fmt.format(t.total)}</div></div>`:''}
+      <div class="chip"><div class="lbl">Fecha</div><div class="val">${esc(o.fecha||'')}</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>${esVenta?'Detalle de la venta e instalación':'Detalle de servicios'}</h2>
+    <div style="overflow-x:auto"><table>
+      <thead>${esVenta?'<tr><th>Ítem</th><th class="tright">Cant.</th><th class="tright">Vlr unitario</th><th class="tright">Vlr total</th></tr>':'<tr><th>Servicio</th><th>Ancho banda</th><th>Dirección</th><th>Cargo instalación</th><th>Recurrente</th></tr>'}</thead>
+      <tbody>${rows}</tbody></table></div>
+    ${totHtml}
+  </div>
+  <div class="card"><h2>Condiciones</h2><pre class="cond">${esc(o.cond||'')}</pre></div>
+  <div class="card">
+    <h2>Firme su documento</h2>
+    <p class="muted" style="margin:0">Para confirmar que es usted, le enviaremos un código a su correo${d.correoMasked?(' <b>'+esc(d.correoMasked)+'</b>'):''}.</p>
+    <div class="step"><span class="n">1</span> Verifique su identidad</div>
+    <div class="otp">
+      <button class="btn btn-otp" id="pedirCodigo" type="button">Enviarme el código</button>
+      <input type="text" id="codigo" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+    </div>
+    <div id="otpMsg"></div>
+    <div class="step"><span class="n">2</span> Sus datos y firma</div>
+    <div class="g2" style="margin-bottom:12px">
+      <div><label>Nombre completo</label><input type="text" id="fNombre" value="${esc(o.cliente?.nombre||'')}"></div>
+      <div><label>Cédula / NIT</label><input type="text" id="fDoc" value="${esc(o.numDoc||o.cliente?.cedula||'')}"></div>
+    </div>
+    <label>Dibuje su firma en el recuadro (con el dedo o el mouse)</label>
+    <div class="padwrap">
+      <canvas id="pad"></canvas>
+      <div style="margin-top:8px;text-align:right"><button class="btn btn-ghost" id="clearPad" type="button">Borrar y repetir</button></div>
+    </div>
+    <div class="legal" style="margin-top:12px">
+      <input type="checkbox" id="acepta">
+      <span>He leído el documento en su totalidad, comprendo su contenido y <b>acepto sus términos, firmándolo electrónicamente</b>. Reconozco que esta firma tiene plena validez y fuerza probatoria conforme a la <b>Ley 527 de 1999</b> y el <b>Decreto 2364 de 2012</b> de la República de Colombia, con los mismos efectos jurídicos de mi firma manuscrita. Autorizo el tratamiento de mis datos según la Ley 1581 de 2012.</span>
+    </div>
+    <div style="margin-top:14px"><button class="btn btn-primary" id="enviar">✍ Firmar documento</button></div>
+    <div id="msg"></div>
+    <p class="muted center" style="margin-top:8px">Verificación del documento (SHA-256):<br><span class="evidencia">${d.hash}</span></p>
+  </div>`;
+  setupPad();
+  $('#enviar').onclick=enviar;
+  $('#pedirCodigo').onclick=pedirCodigo;
+}
+
+async function pedirCodigo(){
+  const b=$('#pedirCodigo'),m=$('#otpMsg');
+  b.disabled=true;m.textContent='Enviando código…';m.className='';
+  const r=await fetch('/api/firma-publica/'+encodeURIComponent(token)+'/codigo',{method:'POST'});
+  const j=await r.json();
+  if(r.ok){m.textContent='✓ Código enviado a '+j.correo+' (vence en 10 min)';m.className='ok';
+    let seg=60;b.textContent='Reenviar en '+seg+'s';
+    const iv=setInterval(()=>{seg--;if(seg<=0){clearInterval(iv);b.disabled=false;b.textContent='Reenviar código';}else b.textContent='Reenviar en '+seg+'s';},1000);
+    $('#codigo').focus();
+  } else {m.textContent='⚠ '+(j.error||'no se pudo enviar');m.className='err';b.disabled=false;}
+}
+
+function setupPad(){
+  const c=$('#pad');const dpr=window.devicePixelRatio||1;
+  c.width=c.offsetWidth*dpr;c.height=180*dpr;
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  ctx.lineWidth=2.4;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#14395c';
+  let dib=false,px=0,py=0;
+  const pos=e=>{const r=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};
+  const start=e=>{e.preventDefault();dib=true;[px,py]=pos(e);};
+  const move=e=>{if(!dib)return;e.preventDefault();const[x,y]=pos(e);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();[px,py]=[x,y];hayTrazo=true;};
+  const end=()=>{dib=false;};
+  c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
+  c.addEventListener('touchstart',start,{passive:false});c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',end);
+  $('#clearPad').onclick=()=>{ctx.clearRect(0,0,c.width,c.height);hayTrazo=false;};
+}
+
+async function enviar(){
+  const msg=$('#msg');
+  const nombre=$('#fNombre').value.trim(),doc=$('#fDoc').value.trim();
+  if(!nombre||!doc){msg.textContent='Completa nombre y documento';msg.className='err';return;}
+  if(!hayTrazo){msg.textContent='Dibuja tu firma en el recuadro';msg.className='err';return;}
+  const cod=$('#codigo').value.trim();
+  if(!/^[0-9]{6}$/.test(cod)){msg.textContent='Ingresa el código de 6 dígitos enviado a tu correo';msg.className='err';return;}
+  if(!$('#acepta').checked){msg.textContent='Debes aceptar los términos de firma electrónica';msg.className='err';return;}
+  msg.textContent='Enviando firma…';msg.className='';
+  $('#enviar').disabled=true;
+  const firma=$('#pad').toDataURL('image/png');
+  const r=await fetch('/api/firma-publica/'+encodeURIComponent(token),{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({nombre,documento:doc,firma,acepta:true,codigo:cod})});
+  const j=await r.json();
+  if(r.ok){
+    const D=window.datosFirma||{};const e=D.empresa||{};const o=D.orden||{};
+    const nomIt=(it,de)=>{it=(it||'').trim();de=(de||'').trim();return (/^[0-9]{1,4}[.)]?$/.test(it)&&de)?de:(it||de);};
+    const fmtF=n=>'$ '+Math.round(+n||0).toLocaleString('es-CO');
+    const servicios=(o.tipo==='venta'&&o.items&&o.items.length)
+      ?o.items.map(l=>nomIt(l.item,l.desc)+(l.cant>1?' (x'+l.cant+')':'')+' — '+fmtF((+l.cant||0)*(+l.precio||0)))
+      :(o.rows||[]).flatMap(r2=>{
+        const n=nomIt(r2.serv,r2.dir);if(!n)return[];
+        const inst=(r2.inst||'').toString().trim(),mes=(r2.mes||'').toString().trim();
+        const det=[];
+        if(inst)det.push('Instalación: '+inst);
+        if(mes)det.push('Mensualidad: '+mes+(/mes/i.test(mes)?'':'/mes'));
+        return det.length?det.map(d=>n+' — '+d):[n];
+      });
+    const lista=servicios.slice(0,4).map(x=>`<li>${esc(x)}</li>`).join('')+(servicios.length>4?`<li>… y ${servicios.length-4} más</li>`:'');
+    const marca=e.marca||e.nombre||'nuestra empresa';
+    $('#app').innerHTML=`<div class="card center felic">
+      <div class="check">✓</div>
+      <h1>¡Felicitaciones, ${esc(nombre.split(' ')[0])}!</h1>
+      <div class="caja">
+        Tu <b>${esc(D.docName||'orden de servicio')}</b> quedó <b>firmada exitosamente</b>.<br>
+        ${servicios.length?`Esto es lo que contrataste con nosotros:<ul class="serv">${lista}</ul>`:''}
+        <br>📬 Recibirás en tu correo la <b>confirmación de aprobación</b> junto con los documentos legales de la empresa.<br>
+        📞 Nuestro equipo se pondrá en contacto contigo muy pronto para coordinar los siguientes pasos.
+      </div>
+      <p style="font-size:15px;color:var(--navy)"><b>¡Gracias por confiar en ${esc(marca)}!</b>${e.eslogan?`<br><span class="muted" style="font-size:12.5px">${esc(e.eslogan)}</span>`:''}</p>
+      ${e.logo?`<img class="logoF" src="${e.logo}">`:''}
+      <div class="contacto">
+        ${e.tel1?('📱 '+esc(e.tel1)+(e.tel2?' / '+esc(e.tel2):'')+'<br>'):''}
+        ${e.web?`🌐 <a href="https://${esc(e.web.replace(/^https?:\/\//,''))}" target="_blank">${esc(e.web)}</a><br>`:''}
+        <span class="muted">Firmado el ${new Date().toLocaleString('es-CO')}</span>
+      </div>
+    </div>`;
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else {
+    msg.textContent='⚠ '+(j.error||'No se pudo firmar');msg.className='err';$('#enviar').disabled=false;
+  }
+}
+init();
+</script>
+</body>
+</html>
